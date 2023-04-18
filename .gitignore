@@ -1,0 +1,8 @@
+# General
+*.txt
+
+# C
+*.o
+
+# Java
+*.class
