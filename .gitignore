@@ -6,6 +6,7 @@ clear.sh
 # C object and binary files
 *.o
 open
+read
 
 # Java
 *.class
