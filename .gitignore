@@ -1,8 +1,11 @@
 # General
+Results
 *.txt
+clear.sh
 
-# C
+# C object and binary files
 *.o
+open
 
 # Java
 *.class
