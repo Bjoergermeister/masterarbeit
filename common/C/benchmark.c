@@ -9,7 +9,7 @@
 
 #define BUFFER_LENGTH 10
 
-int save_benchmark_result(long time, char *filename)
+FILE *open_file(char *filename)
 {
     FILE *fd = fopen(filename, "a");
     if (fd == NULL)
@@ -17,19 +17,36 @@ int save_benchmark_result(long time, char *filename)
         char buffer[50];
         sprintf(buffer, "Fehler beim Öffnen der Datei '%s': ", filename);
         perror(buffer);
-        return -1;
+        exit(-1);
     }
 
-    int result = fprintf(fd, "%ld\n", time);
-    if (result < 0)
-    {
-        perror("Fehler beim Schreiben in die Datei: ");
-        return -1;
-    }
+    return fd;
+}
+
+int save_benchmark_result_multiple(long time1, long time2, char *filename)
+{
+    FILE *fd = open_file(filename);
+
+    int result = fprintf(fd, "%ld, %ld\n", time1, time2);
+    if (handle_error(result, filename))
+        exit(1);
 
     int success = fclose(fd);
     if (handle_error(success, filename))
-        return -1;
+        exit(-1);
+
+    return 0;
+}
+
+int save_benchmark_result(long time, char *filename)
+{
+    FILE *fd = open_file(filename);
+
+    int result = fprintf(fd, "%ld\n", time);
+    handle_error(result, filename);
+
+    int success = fclose(fd);
+    handle_error(success, filename);
 
     return 0;
 }
@@ -43,7 +60,6 @@ int handle_error(int return_value, char *filename)
     if (return_value == -1)
     {
         perror(str);
-        return true;
+        exit(-1);
     }
-    return false;
 }
