@@ -7,6 +7,9 @@ clear.sh
 *.o
 open
 read
+write
+create
+delete
 
 # Java
 *.class
