@@ -71,7 +71,7 @@ function container() {
         docker run --name "$image" -it --rm --mount "$volume" "$image" ./read "dir/1.txt" "${output_file_prefix}1.txt"
         docker run --name "$image" -it --rm --mount "$volume" "$image" ./read "dir/128.txt" "${output_file_prefix}128.txt"
         docker run --name "$image" -it --rm --mount "$volume" "$image" ./read "dir/256.txt" "${output_file_prefix}256.txt"
-        docker run --name "$image" -it --rm --mount "$volume" "$image" ./read "dir/512.txt" "${output_file_prefix}1512.txt"
+        docker run --name "$image" -it --rm --mount "$volume" "$image" ./read "dir/512.txt" "${output_file_prefix}512.txt"
         docker run --name "$image" -it --rm --mount "$volume" "$image" ./read "dir/1024.txt" "${output_file_prefix}1024.txt"
         docker run --name "$image" -it --rm --mount "$volume" "$image" ./read "dir/2048.txt" "${output_file_prefix}2048.txt"
     done
