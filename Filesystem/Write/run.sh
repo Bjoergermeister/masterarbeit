@@ -36,7 +36,6 @@ function manual() {
     for i in {0..99}
     do
         result_dir="../../../../Results"
-        reset_filesystem
 
         cd Filesystem
         sudo mount -t overlay overlay -o lowerdir=Regular,upperdir=upper,workdir=workdir merged
@@ -68,12 +67,12 @@ function container() {
     
     for i in {0..99}
     do
-        docker run --name "$image" -it --rm --mount "$volume" "$image" ./read "dir/1.txt" "${output_file_prefix}1.txt"
-        docker run --name "$image" -it --rm --mount "$volume" "$image" ./read "dir/128.txt" "${output_file_prefix}128.txt"
-        docker run --name "$image" -it --rm --mount "$volume" "$image" ./read "dir/256.txt" "${output_file_prefix}256.txt"
-        docker run --name "$image" -it --rm --mount "$volume" "$image" ./read "dir/512.txt" "${output_file_prefix}512.txt"
-        docker run --name "$image" -it --rm --mount "$volume" "$image" ./read "dir/1024.txt" "${output_file_prefix}1024.txt"
-        docker run --name "$image" -it --rm --mount "$volume" "$image" ./read "dir/2048.txt" "${output_file_prefix}2048.txt"
+        docker run --name "$image" -it --rm --mount "$volume" "$image" ./write "dir/1.txt" "${output_file_prefix}1.txt"
+        docker run --name "$image" -it --rm --mount "$volume" "$image" ./write "dir/128.txt" "${output_file_prefix}128.txt"
+        docker run --name "$image" -it --rm --mount "$volume" "$image" ./write "dir/256.txt" "${output_file_prefix}256.txt"
+        docker run --name "$image" -it --rm --mount "$volume" "$image" ./write "dir/512.txt" "${output_file_prefix}512.txt"
+        docker run --name "$image" -it --rm --mount "$volume" "$image" ./write "dir/1024.txt" "${output_file_prefix}1024.txt"
+        docker run --name "$image" -it --rm --mount "$volume" "$image" ./write "dir/2048.txt" "${output_file_prefix}2048.txt"
     done
 
     popd > /dev/null
