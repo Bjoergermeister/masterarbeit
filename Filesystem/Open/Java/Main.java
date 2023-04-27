@@ -1,6 +1,5 @@
 import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
@@ -15,20 +14,12 @@ public class Main {
         String openFile = args[0];
         String saveFile = args[1];
 
-        FileReader fileReader;
-        try {
-            long start = System.nanoTime();
-            fileReader = new FileReader(args[0]);
-            long end = System.nanoTime();
+        long start = System.nanoTime();
+        File file = new File(openFile);
+        long end = System.nanoTime();
 
-            long result = end - start;
-            fileReader.read();
-            save(saveFile, result);
-        } catch (FileNotFoundException ex) {
-            System.out.println(ex.getMessage());
-        } catch (IOException ex) {
-            System.out.println(ex.getMessage());
-        }
+        long result = end - start;
+        save(saveFile, result);
     }
 
     public static void save(String saveFile, long result) {
