@@ -2,10 +2,15 @@
 
 # Run tests with a regular process on a regular filesystem
 function run_regular() {
+
     result_dir="../../../../Results"
     for i in {0..99}
     do
+        # C version
         ../../C/open "dir/$1.txt" "${result_dir}/Filesystem_Open_C_Regular_$1.txt"
+    
+        # Java version
+        java -cp ../../Java/ Main "dir/$1.txt" "${result_dir}/Filesystem_Open_Java_Regular_$1.txt"
     done
 }
 
@@ -27,7 +32,11 @@ function run_manual(){
 
     for i in {0..15}
     do
+        # C version
         ../../../C/open "dir/$i.txt" "$result_dir/Filesystem_Open_C_Manual_$i.txt"
+    
+        # Java version
+        java -cp ../../../Java Main "dir/$1.txt" "$result_dir/Filesystem_Open_Java_Manual_$1.txt"
     done
 
     cd ..
@@ -38,11 +47,14 @@ function run_manual(){
 # Run tests in a container
 function run_container() {
     volume="type=bind,source=$(pwd)/Results,target=/Results"
-    image="masterarbeit-filesystem-open-c"
+    c_image="masterarbeit-filesystem-open-c"
+    java_image="masterarbeit-filesystem-open-java"
     for i in {0..15}
     do
-        #echo "docker run --name $image --rm --mount $volume $image ./open dir/$i /Results/Filesystem_Open_C_Container_$i.txt"
-        docker run --name "$image" -it --rm --mount "$volume" "$image" ./open "dir/$i.txt" "Results/Filesystem_Open_C_Container_$i.txt"         
+        c_result_file="Results/Filesystem_Open_C_Container_$i.txt"
+        java_result_file="Results/Filesystem_Open_Java_Container_$i.txt"
+        docker run --name "$c_image" -it --rm --mount "$volume" "$c_image" ./open "dir/$i.txt" "$c_result_file"         
+        docker run --name "$java_image" -it --rm --mount "$volume" "$java_image" java "Main" "dir/$i.txt" "$java_result_file"
     done
 }
 
