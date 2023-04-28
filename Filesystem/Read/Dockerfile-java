@@ -2,7 +2,7 @@ FROM openjdk:17.0.2-slim-buster
 
 WORKDIR /
 RUN mkdir /dir /Results
-COPY Java/main.class .
+COPY Java/Main.class .
 COPY Filesystem/Regular/dir/0.txt /dir
 COPY Filesystem/Regular/dir/1.txt /dir
 COPY Filesystem/Regular/dir/2.txt /dir

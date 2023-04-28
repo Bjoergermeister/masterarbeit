@@ -5,7 +5,11 @@ function run_regular() {
     result_dir="../../../../Results"
     for i in {0..99}
     do
+        # C version
         ../../C/read "dir/$1.txt" "${result_dir}/Filesystem_Read_C_Regular_$1.txt"
+
+        # Java version
+        java -cp "../../Java" Main "dir/$1.txt" "${result_dir}/Filesystem_Read_Java_Regular_$1.txt"
     done
 }
 
@@ -19,7 +23,8 @@ function run_manual(){
     do
         lowerdirs="$lowerdirs:Layer$i"
     done
-    
+
+    # C version
     sudo mount -t overlay overlay -o lowerdir=${lowerdirs},upperdir=upper,workdir=workdir merged
 
     cd merged
@@ -28,6 +33,21 @@ function run_manual(){
     for i in {0..15}
     do
         ../../../C/read "dir/$i.txt" "$result_dir/Filesystem_Read_C_Manual_$i.txt"
+    done
+
+    cd ..
+
+    sudo umount overlay
+
+    # Java version
+    sudo mount -t overlay overlay -o lowerdir=${lowerdirs},upperdir=upper,workdir=workdir merged
+
+    cd merged
+
+
+    for i in {0..15}
+    do
+        java -cp "../../../Java" Main "dir/$i.txt" "$result_dir/Filesystem_Read_Java_Manual_$i.txt"
     done
 
     cd ..
@@ -53,6 +73,7 @@ function regular() {
 
     for i in {0..15}
     do
+	echo "$i von 15"
         run_regular "$i"
     done 
 
@@ -65,8 +86,9 @@ function manual() {
 
     pushd Filesystem/Overlay > /dev/null
 
-    for i in {0..100}
+    for i in {0..99}
     do
+	echo "$i von 99"
         run_manual "$i"
     done
 
@@ -79,8 +101,9 @@ function container() {
 
     pushd ../.. > /dev/null
 
-    for i in {0..100}
+    for i in {0..99}
     do
+	echo "$i von 99"
         run_container 
     done
 
