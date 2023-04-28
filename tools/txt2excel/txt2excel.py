@@ -44,14 +44,14 @@ def get_case_label_for_index(operation, index):
     else:
         return str(CASE_LABELS[operation][index])
     
-def get_values(operation, mode, case_index):
+def get_values(operation, language, mode, case_index):
     if operation == "Create":
-        return benchmarks["Filesystem"][operation]["C"][mode]
+        return benchmarks["Filesystem"][operation][language][mode]
     else:
         case = get_case_label_for_index(operation, case_index)
         if case.endswith(")"):
             case = case[:-4]
-        return benchmarks["Filesystem"][operation]["C"][mode][case]
+        return benchmarks["Filesystem"][operation][language][mode][case]
 
 
 def add_spreadsheet_headers(workbook):
@@ -82,16 +82,15 @@ def add_spreadsheet_header(sheet, operation):
             sheet[column_code].fill = PatternFill(fgColor="cccccc", fill_type="solid")
 
 
-def add_data_to_spreadsheet(workbook):
+def add_data_to_spreadsheet(workbook, language):
     for operation in list(benchmarks["Filesystem"].keys()):
-        print("\n", operation)
         sheet = workbook[operation]
 
         # Regular
         start_row = 2 if operation == "Create" else 3
         for mode in MODES:                          
             for index, column in enumerate(get_columns_for_mode(operation, mode)):
-                values = get_values(operation, mode, index)
+                values = get_values(operation, language, mode, index)
                 for row in range(0, 100):
                     cell = f"{column}{start_row + row}"
                     sheet[cell] = values[row][index % 2] if operation == "Write" else values[row]
@@ -107,9 +106,10 @@ def add_data_to_spreadsheet(workbook):
                     start_row_offset = 101 + list_index
                     sheet[f"{ALL_COLUMNS[index][column_index]}{start_row + start_row_offset}"] = formula
 
-def save_spreadsheet():
+def prepare_workbook(language, filename):
     workbook = Workbook()
 
+    # Rename sheets
     workbook.active.title = "Open"
     workbook.create_sheet("Read", 2)
     workbook.create_sheet("Write", 3)
@@ -117,8 +117,8 @@ def save_spreadsheet():
     workbook.create_sheet("Delete", 5)
 
     add_spreadsheet_headers(workbook)
-    add_data_to_spreadsheet(workbook)
-    workbook.save(filename="../Filesystem.xlsx")
+    add_data_to_spreadsheet(workbook, language)
+    workbook.save(filename=filename)
 
 def get_target_list(type, operation, language, mode, case):
     if type not in benchmarks:
@@ -162,7 +162,7 @@ def read_measurement_files(folder):
         path = f"{folder}/{file}"
 
         file_parts = path[0:-4].split("_")
-        file_parts[0] = file_parts[0][11:]
+        file_parts[0] = file_parts[0][14:]
 
         if file_parts[1] == "Create": # There is just one case in create operation
             process_file(path, file_parts[0], file_parts[1], file_parts[2], file_parts[3], None)
@@ -170,5 +170,6 @@ def read_measurement_files(folder):
             process_file(path, file_parts[0], file_parts[1], file_parts[2], file_parts[3], file_parts[4])
 
 if __name__ == "__main__":
-    read_measurement_files("../Results")
-    save_spreadsheet()
+    read_measurement_files("../../Results")
+    prepare_workbook("C", "../../Filesystem_C.xlsx")
+    prepare_workbook("Java", "../../Filesystem_Java.xlsx")
