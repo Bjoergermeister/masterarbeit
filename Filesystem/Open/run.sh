@@ -8,7 +8,7 @@ function run_regular() {
     do
         # C version
         ../../C/open "dir/$1.txt" "${result_dir}/Filesystem_Open_C_Regular_$1.txt"
-    
+
         # Java version
         java -cp ../../Java/ Main "dir/$1.txt" "${result_dir}/Filesystem_Open_Java_Regular_$1.txt"
     done
@@ -24,7 +24,7 @@ function run_manual(){
     do
         lowerdirs="$lowerdirs:Layer$i"
     done
-    
+
     sudo mount -t overlay overlay -o lowerdir=${lowerdirs},upperdir=upper,workdir=workdir merged
 
     cd merged
@@ -34,9 +34,9 @@ function run_manual(){
     do
         # C version
         ../../../C/open "dir/$i.txt" "$result_dir/Filesystem_Open_C_Manual_$i.txt"
-    
+
         # Java version
-        java -cp ../../../Java Main "dir/$1.txt" "$result_dir/Filesystem_Open_Java_Manual_$1.txt"
+        java -cp ../../../Java Main "dir/$1.txt" "$result_dir/Filesystem_Open_Java_Manual_$i.txt"
     done
 
     cd ..
@@ -53,7 +53,7 @@ function run_container() {
     do
         c_result_file="Results/Filesystem_Open_C_Container_$i.txt"
         java_result_file="Results/Filesystem_Open_Java_Container_$i.txt"
-        docker run --name "$c_image" -it --rm --mount "$volume" "$c_image" ./open "dir/$i.txt" "$c_result_file"         
+        docker run --name "$c_image" -it --rm --mount "$volume" "$c_image" ./open "dir/$i.txt" "$c_result_file"
         docker run --name "$java_image" -it --rm --mount "$volume" "$java_image" java "Main" "dir/$i.txt" "$java_result_file"
     done
 }
@@ -66,6 +66,7 @@ function regular() {
 
     for i in {0..15}
     do
+	echo "$i von 15"
         run_regular "$i"
     done 
 
@@ -78,8 +79,9 @@ function manual() {
 
     pushd Filesystem/Overlay > /dev/null
 
-    for i in {0..100}
+    for i in {0..99}
     do
+	echo "$i von 100"
         run_manual "$i"
     done
 
@@ -91,9 +93,10 @@ function container() {
 
     pushd ../.. > /dev/null
 
-    for i in {0..100}
+    for i in {0..99}
     do
-        run_container 
+	echo "$i von 100"
+    	run_container
     done
 
     popd > /dev/null
@@ -102,16 +105,16 @@ function container() {
 # Prepare and execute tests
 
 if [ "$1" = "regular"  ] || [ "$1" = "" ] 
-then 
+then
     regular
 fi
 
 if [ "$1" = "manual"  ] || [ "$1" = "" ] 
-then 
+then
     manual
 fi
 
 if [ "$1" = "container"  ] || [ "$1" = "" ] 
-then 
+then
     container
 fi
