@@ -2,12 +2,26 @@
 
 # Run tests with a regular process on a container filesystem
 function run_manual(){
-    result_dir="../../../../../Results"    
+    result_dir="../../../../../Results" 
+
+    # C version   
     sudo mount -t overlay overlay -o lowerdir=lower,upperdir=upper,workdir=workdir merged
 
     cd merged
     
     ../../../C/create "new.txt" "$result_dir/Filesystem_Create_C_Manual.txt"
+
+    cd ..
+
+    sudo umount overlay
+    rm upper/new.txt
+
+    # Java version   
+    sudo mount -t overlay overlay -o lowerdir=lower,upperdir=upper,workdir=workdir merged
+
+    cd merged
+    
+    java -cp ../../../Java/ Main "new.txt" "$result_dir/Filesystem_Create_Java_Manual.txt"
 
     cd ..
 
@@ -24,7 +38,14 @@ function regular() {
     result_dir="../../../../Results"
     for i in {0..99}
     do
+        echo "$i von 99"
+
+        # C version
         ../../C/create "new.txt" "${result_dir}/Filesystem_Create_C_Regular.txt"
+        rm new.txt
+    
+        # Java version
+        java -cp ../../Java Main "new.txt" "${result_dir}/Filesystem_Create_Java_Regular.txt"
         rm new.txt
     done
 
@@ -39,6 +60,7 @@ function manual() {
 
     for i in {0..99}
     do
+        echo "$i von 99"
         run_manual
     done
 
@@ -51,12 +73,16 @@ function container() {
     pushd ../.. > /dev/null
 
     volume="type=bind,source=$(pwd)/Results,target=/Results"
-    image="masterarbeit-filesystem-create-c"
-    output_file="Results/Filesystem_Create_C_Container.txt"
+    c_image="masterarbeit-filesystem-create-c"
+    java_image="masterarbeit-filesystem-create-java"
+    c_output_file="Results/Filesystem_Create_C_Container.txt"
+    java_output_file="Results/Filesystem_Create_Java_Container.txt"
 
     for i in {0..99}
     do
-        docker run --name "$image" -it --rm --mount "$volume" "$image" ./create "new.txt" "$output_file"         
+        echo "$i von 99"
+        docker run --name "$c_image" -it --rm --mount "$volume" "$c_image" ./create "new.txt" "$c_output_file" 
+        docker run --name "$java_image" -it --rm --mount "$volume" "$java_image" ./create "new.txt" "$java_output_file"                 
     done
 
     popd > /dev/null
