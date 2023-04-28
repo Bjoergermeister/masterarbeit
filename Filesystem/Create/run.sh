@@ -82,7 +82,7 @@ function container() {
     do
         echo "$i von 99"
         docker run --name "$c_image" -it --rm --mount "$volume" "$c_image" ./create "new.txt" "$c_output_file" 
-        docker run --name "$java_image" -it --rm --mount "$volume" "$java_image" ./create "new.txt" "$java_output_file"                 
+        docker run --name "$java_image" -it --rm --mount "$volume" "$java_image" java Main "new.txt" "$java_output_file"                 
     done
 
     popd > /dev/null
