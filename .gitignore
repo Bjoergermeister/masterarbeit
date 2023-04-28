@@ -2,6 +2,7 @@
 Results
 *.txt
 clear.sh
+*.xlsx
 
 # C object and binary files
 *.o
