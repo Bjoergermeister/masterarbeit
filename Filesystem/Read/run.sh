@@ -58,10 +58,12 @@ function run_manual(){
 # Run tests in a container
 function run_container() {
     volume="type=bind,source=$(pwd)/Results,target=/Results"
-    image="masterarbeit-filesystem-read-c"
+    c_image="masterarbeit-filesystem-read-c"
+    java_image="masterarbeit-filesystem-read-java"
     for i in {0..15}
     do
-        docker run --name "$image" -it --rm --mount "$volume" "$image" ./read "dir/$i.txt" "Results/Filesystem_Read_C_Container_$i.txt"         
+        docker run --name "$c_image" -it --rm --mount "$volume" "$c_image" ./read "dir/$i.txt" "Results/Filesystem_Read_C_Container_$i.txt"
+	docker run --name "$java_image" -it --rm --mount "$volume" "$java_image" java Main "dir/$i.txt" "Results/Filesystem_Read_Java_Container_$i.txt"
     done
 }
 
