@@ -18,8 +18,7 @@ int main(int argc, char **argv)
     struct timespec end;
 
     int fd = open(file_to_read, O_RDONLY | __O_DIRECT, S_IRWXU);
-    if (handle_error(fd, file_to_read))
-        return -1;
+    handle_error(fd, file_to_read);
 
     int file_size = lseek(fd, 0, SEEK_END);
 
@@ -28,8 +27,7 @@ int main(int argc, char **argv)
     read(fd, read_buffer, file_size);
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end);
 
-    if (handle_error(close(fd), file_to_read))
-        return -1;
+    handle_error(close(fd), file_to_read);
 
     long difference = calculate_time_difference(&start, &end);
 

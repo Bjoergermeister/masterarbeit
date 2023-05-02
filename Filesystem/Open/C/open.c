@@ -29,14 +29,13 @@ int main(int argc, char **argv)
     int file_descriptor = open(filename_to_open, O_RDONLY | __O_DIRECT, S_IRWXU);
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end);
 
-    if (handle_error(file_descriptor, filename_to_open))
-        return -1;
+    handle_error(file_descriptor, filename_to_open);
 
     int success = close(file_descriptor);
-    if (handle_error(success, filename_to_open))
-        return -1;
+    handle_error(success, filename_to_open);
 
     long difference = calculate_time_difference(&start, &end);
+    printf("%ld\n", difference);
     long difference_in_milliseconds = difference / MILLISECONDS_IN_ONE_SECOND;
 
     return save_benchmark_result(difference_in_milliseconds, filename_to_save);

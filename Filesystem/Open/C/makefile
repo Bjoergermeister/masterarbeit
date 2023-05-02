@@ -1,4 +1,4 @@
-common = ../../../common
+common = ../../../common/C
 libs = $(common)/timing.o $(common)/benchmark.o
 
 timing:
