@@ -20,7 +20,7 @@ public class Main {
         file.delete();
         long end = System.nanoTime();
 
-        long result = end - start;
+        long result = (end - start) / 1000; // Convert to microseconds
         save(saveFile, result);
     }
 

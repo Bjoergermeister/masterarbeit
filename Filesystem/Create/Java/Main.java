@@ -21,7 +21,7 @@ public class Main {
             file.createNewFile();
             long end = System.nanoTime();
 
-            long result = end - start;
+            long result = (end - start) / 1000; // Convert to microseconds
             save(saveFile, result);
         } catch (IOException ex) {
             System.out.println(ex.getMessage());

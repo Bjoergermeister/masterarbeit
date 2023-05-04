@@ -29,7 +29,7 @@ public class Main {
             long start = System.nanoTime();
             writer.append('a');
             long end = System.nanoTime();
-            return end - start;
+            return (end - start) / 1000; // Convert to microseconds
         } catch (IOException ex) {
             System.out.println(ex.getMessage());
             System.exit(-1);

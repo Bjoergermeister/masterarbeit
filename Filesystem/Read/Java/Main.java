@@ -27,7 +27,7 @@ public class Main {
             fileReader.read(buffer, 0, (int) length);
             long end = System.nanoTime();
 
-            long result = end - start;
+            long result = (end - start) / 1000; // Convert to microseconds
             save(saveFile, result);
         } catch (IOException ex) {
             System.out.println(ex.getMessage());

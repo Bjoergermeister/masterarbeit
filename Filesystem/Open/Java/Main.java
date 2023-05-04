@@ -14,11 +14,14 @@ public class Main {
         String openFile = args[0];
         String saveFile = args[1];
 
+        File file; // Create a file instance here so that the lib is already loaded before time is
+                   // measured
+
         long start = System.nanoTime();
-        File file = new File(openFile);
+        file = new File(openFile);
         long end = System.nanoTime();
 
-        long result = end - start;
+        long result = (end - start) / 1000; // Convert to microseconds
         save(saveFile, result);
     }
 
