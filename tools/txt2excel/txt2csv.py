@@ -1,7 +1,5 @@
+import csv
 import math
-
-from openpyxl import Workbook
-from openpyxl.styles import Alignment, PatternFill
 
 from data_importer import import_data
 from data_importer import benchmarks
@@ -105,21 +103,62 @@ def add_data_to_spreadsheet(workbook, language):
                     start_row_offset = 101 + list_index
                     sheet[f"{ALL_COLUMNS[index][column_index]}{start_row + start_row_offset}"] = formula
 
-def prepare_workbook(language, filename):
-    workbook = Workbook()
+HEADERS = {
+    "Other": ["level", "regular", "manual", "container"],
+    "Write": ["level", "regular", "regular2", "manual", "manual2", "container", "container2"],
+}
 
-    # Rename sheets
-    workbook.active.title = "Open"
-    workbook.create_sheet("Read", 2)
-    workbook.create_sheet("Write", 3)
-    workbook.create_sheet("Create", 4)
-    workbook.create_sheet("Delete", 5)
+CASES = {
+    "Delete": ["1", "128", "256", "512", "1024", "2048"],
+    "Other": map(lambda x: str(x), range(0, 15))
+}
 
-    add_spreadsheet_headers(workbook)
-    add_data_to_spreadsheet(workbook, language)
-    workbook.save(filename=filename)
+first = lambda list: [element[0] for element in list]
+second = lambda list: [element[1] for element in list]
+
+
+def calculate_average(times):
+    return round(sum(sorted(times)[5:-5]) / 90, 2)
+
+def write_filesystem_create(writer, operation, language):
+    regular_value = calculate_average(benchmarks["Filesystem"]["Create"][language]["Regular"])
+    manual_value = calculate_average(benchmarks["Filesystem"]["Create"][language]["Manual"])
+    container_value = calculate_average(benchmarks["Filesystem"]["Create"][language]["Container"])
+    writer.writerow([0, regular_value, manual_value, container_value])    
+
+def write_filesystem_write(writer, operation, language):
+    for size in ["1", "128", "256", "512", "1024", "2048"]:
+        regular_value = calculate_average(first(benchmarks["Filesystem"]["Write"][language]["Regular"][size]))
+        regular_value2 = calculate_average(second(benchmarks["Filesystem"]["Write"][language]["Regular"][size]))
+        manual_value = calculate_average(first(benchmarks["Filesystem"]["Write"][language]["Manual"][size]))
+        manual_value2 = calculate_average(second(benchmarks["Filesystem"]["Write"][language]["Manual"][size]))
+        container_value = calculate_average(first(benchmarks["Filesystem"]["Write"][language]["Container"][size]))
+        container_value2 = calculate_average(second(benchmarks["Filesystem"]["Write"][language]["Container"][size]))
+        writer.writerow([size, regular_value, regular_value2, manual_value, manual_value2, container_value, container_value2])
+
+def write_filesystem_open_read_delete(writer, operation, language):
+    cases = CASES["Delete"] if operation == "Delete" else CASES["Other"]
+    for index in cases:
+        regular_value = calculate_average(benchmarks["Filesystem"][operation][language]["Regular"][str(index)])
+        manual_value = calculate_average(benchmarks["Filesystem"][operation][language]["Manual"][str(index)])
+        container_value = calculate_average(benchmarks["Filesystem"][operation][language]["Container"][str(index)])
+        writer.writerow([index, regular_value, manual_value, container_value])
+
+def write_csv(filename, func, operation, language):
+    
+    with open(filename, "w", newline='') as file:
+        writer = csv.writer(file)
+
+        field = HEADERS["Write"] if operation == "Write" else HEADERS["Other"]
+        writer.writerow(field)
+        func(writer, operation, language)
 
 if __name__ == "__main__":
-    import_data("../../Results")
-    prepare_workbook("C", "../../Filesystem_C.xlsx")
-    prepare_workbook("Java", "../../Filesystem_Java.xlsx")
+    import_data("../../Results", benchmarks)
+
+    for language in ["C", "Java"]:
+        write_csv(f"../../Filesystem_Open_{language}.csv", write_filesystem_open_read_delete, "Open", language)
+        write_csv(f"../../Filesystem_Read_{language}.csv", write_filesystem_open_read_delete, "Read", language)
+        write_csv(f"../../Filesystem_Write_{language}.csv", write_filesystem_write, "Write", language)
+        write_csv(f"../../Filesystem_Delete_{language}.csv", write_filesystem_open_read_delete, "Delete", language)
+        write_csv(f"../../Filesystem_Create_{language}.csv", write_filesystem_create, "Create", language)

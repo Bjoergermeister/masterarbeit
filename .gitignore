@@ -3,6 +3,8 @@ Results
 *.txt
 clear.sh
 *.xlsx
+*.csv
+__pycache__
 
 # C object and binary files
 *.o
