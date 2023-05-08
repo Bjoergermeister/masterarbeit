@@ -120,6 +120,6 @@ def prepare_workbook(language, filename):
     workbook.save(filename=filename)
 
 if __name__ == "__main__":
-    import_data("../../Results")
+    import_data("../../Results", benchmarks)
     prepare_workbook("C", "../../Filesystem_C.xlsx")
     prepare_workbook("Java", "../../Filesystem_Java.xlsx")

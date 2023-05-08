@@ -110,7 +110,7 @@ HEADERS = {
 
 CASES = {
     "Delete": ["1", "128", "256", "512", "1024", "2048"],
-    "Other": map(lambda x: str(x), range(0, 15))
+    "Other": ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15",]
 }
 
 first = lambda list: [element[0] for element in list]
@@ -139,9 +139,9 @@ def write_filesystem_write(writer, operation, language):
 def write_filesystem_open_read_delete(writer, operation, language):
     cases = CASES["Delete"] if operation == "Delete" else CASES["Other"]
     for index in cases:
-        regular_value = calculate_average(benchmarks["Filesystem"][operation][language]["Regular"][str(index)])
-        manual_value = calculate_average(benchmarks["Filesystem"][operation][language]["Manual"][str(index)])
-        container_value = calculate_average(benchmarks["Filesystem"][operation][language]["Container"][str(index)])
+        regular_value = calculate_average(benchmarks["Filesystem"][operation][language]["Regular"][index])
+        manual_value = calculate_average(benchmarks["Filesystem"][operation][language]["Manual"][index])
+        container_value = calculate_average(benchmarks["Filesystem"][operation][language]["Container"][index])
         writer.writerow([index, regular_value, manual_value, container_value])
 
 def write_csv(filename, func, operation, language):
