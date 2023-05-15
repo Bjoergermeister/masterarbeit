@@ -34,8 +34,8 @@ int main(int argc, char **argv)
 
     sync();
 
-    long difference_first_write = write_and_measure(fd);
-    long difference_second_write = write_and_measure(fd);
+    long difference_first_write = write_and_measure(fd) / MILLISECONDS_IN_ONE_SECOND;
+    long difference_second_write = write_and_measure(fd) / MILLISECONDS_IN_ONE_SECOND;
 
     handle_error(close(fd), file_to_read);
 
