@@ -6,7 +6,7 @@ function run_regular() {
     for i in {0..99}
     do
         # C version
-        #../../C/read "dir/$1.txt" "${result_dir}/Filesystem_Read_C_Regular_$1.txt"
+        ../../C/read "dir/$1.txt" "${result_dir}/Filesystem_Read_C_Regular_$1.txt"
 
         # Java version
         java -cp "../../Java" Main "dir/$1.txt" "${result_dir}/Filesystem_Read_Java_Regular_$1.txt"
@@ -25,23 +25,22 @@ function run_manual(){
     done
 
     # C version
-    #sudo mount -t overlay overlay -o lowerdir=${lowerdirs},upperdir=upper,workdir=workdir merged
+    sudo mount -t overlay overlay -o lowerdir=${lowerdirs},upperdir=upper,workdir=workdir merged
 
-    #cd merged
+    cd merged
 
 
-    #for i in {0..15}
-    #do
-    #    ../../../C/read "dir/$i.txt" "$result_dir/Filesystem_Read_C_Manual_$i.txt"
-    #done
+    for i in {0..15}
+    do
+        ../../../C/read "dir/$i.txt" "$result_dir/Filesystem_Read_C_Manual_$i.txt"
+    done
 
-    #cd ..
+    cd ..
 
-    #sudo umount overlay
+    sudo umount overlay
 
     # Java version
     sudo mount -t overlay overlay -o lowerdir=${lowerdirs},upperdir=upper,workdir=workdir merged
-
     cd merged
 
 
@@ -63,7 +62,7 @@ function run_container() {
     for i in {0..15}
     do
         docker run --name "$c_image" -it --rm --mount "$volume" "$c_image" ./read "dir/$i.txt" "Results/Filesystem_Read_C_Container_$i.txt"
-	    #docker run --name "$java_image" -it --rm --mount "$volume" "$java_image" java Main "dir/$i.txt" "Results/Filesystem_Read_Java_Container_$i.txt"
+	    docker run --name "$java_image" -it --rm --mount "$volume" "$java_image" java Main "dir/$i.txt" "Results/Filesystem_Read_Java_Container_$i.txt"
     done
 }
 
@@ -75,7 +74,7 @@ function regular() {
 
     for i in {0..15}
     do
-	echo "$i von 15"
+	    echo "$((i + 1)) von 16"
         run_regular "$i"
     done 
 
@@ -90,7 +89,7 @@ function manual() {
 
     for i in {0..99}
     do
-	echo "$i von 99"
+	    echo "$((i + 1)) von 100"
         run_manual "$i"
     done
 
@@ -105,7 +104,7 @@ function container() {
 
     for i in {0..99}
     do
-	echo "$i von 99"
+	    echo "$((i + 1)) von 100"
         run_container 
     done
 
