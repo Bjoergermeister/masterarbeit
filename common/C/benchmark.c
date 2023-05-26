@@ -23,43 +23,47 @@ FILE *open_file(char *filename)
     return fd;
 }
 
-int save_benchmark_result_multiple(long time1, long time2, char *filename)
+void save_benchmark_result_multiple(long time1, long time2, char *filename)
 {
     FILE *fd = open_file(filename);
 
     int result = fprintf(fd, "%ld, %ld\n", time1, time2);
-    if (handle_error(result, filename))
-        exit(1);
-
-    int success = fclose(fd);
-    if (handle_error(success, filename))
-        exit(-1);
-
-    return 0;
-}
-
-int save_benchmark_result(long time, char *filename)
-{
-    FILE *fd = open_file(filename);
-
-    int result = fprintf(fd, "%ld\n", time);
     handle_error(result, filename);
 
     int success = fclose(fd);
     handle_error(success, filename);
-
-    return 0;
 }
 
-int handle_error(int return_value, char *filename)
+void save_benchmark_result(long time, char *filename)
 {
-    char *message = "Ein Fehler ist aufgetreten: ";
-    char *str = malloc(strlen(message) + strlen(filename));
-    sprintf(str, "%s %s", message, filename);
+    FILE *fd = open_file(filename);
 
-    if (return_value == -1)
+    int result = fprintf(fd, "%ld\n", time);
+    if (result <= 0)
     {
-        perror(str);
-        exit(-1);
+        perror(filename);
     }
+    int success = fclose(fd);
+    handle_error(success, filename);
+}
+
+void save_benchmark_result_partial(long time, int count, char *prefix)
+{
+    char filename[50];
+    snprintf(filename, 50, "%s_%d.txt", prefix, count);
+    save_benchmark_result(time, filename);
+}
+
+void handle_error(int return_value, char *filename)
+{
+    if (return_value == 0)
+        return;
+
+    printf("%d\n", return_value);
+    char *message = "Ein Fehler ist aufgetreten: ";
+    char string[256];
+    snprintf(string, 256, "%s %s", message, filename);
+
+    perror(string);
+    exit(-1);
 }

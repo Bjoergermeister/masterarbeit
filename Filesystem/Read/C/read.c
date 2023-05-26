@@ -31,5 +31,5 @@ int main(int argc, char **argv)
 
     long difference = calculate_time_difference(&start, &end);
 
-    return save_benchmark_result(difference, file_to_save);
+    save_benchmark_result(difference, file_to_save);
 }

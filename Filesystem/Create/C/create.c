@@ -37,5 +37,5 @@ int main(int argc, char **argv)
     long difference = calculate_time_difference(&start, &end);
     long difference_in_milliseconds = difference / MILLISECONDS_IN_ONE_SECOND;
 
-    return save_benchmark_result(difference_in_milliseconds, file_to_save);
+    save_benchmark_result(difference_in_milliseconds, file_to_save);
 }

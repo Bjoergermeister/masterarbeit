@@ -38,5 +38,5 @@ int main(int argc, char **argv)
     printf("%ld\n", difference);
     long difference_in_milliseconds = difference / MILLISECONDS_IN_ONE_SECOND;
 
-    return save_benchmark_result(difference_in_milliseconds, filename_to_save);
+    save_benchmark_result(difference_in_milliseconds, filename_to_save);
 }

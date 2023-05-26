@@ -24,5 +24,5 @@ int main(int argc, char **argv)
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end);
 
     long difference = calculate_time_difference(&start, &end);
-    return save_benchmark_result(difference, file_to_save);
+    save_benchmark_result(difference, file_to_save);
 }

@@ -39,5 +39,5 @@ int main(int argc, char **argv)
 
     handle_error(close(fd), file_to_read);
 
-    return save_benchmark_result_multiple(difference_first_write, difference_second_write, file_to_save);
+    save_benchmark_result_multiple(difference_first_write, difference_second_write, file_to_save);
 }
