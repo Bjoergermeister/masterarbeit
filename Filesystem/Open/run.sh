@@ -26,7 +26,6 @@ function run_manual(){
     done
 
     sudo mount -t overlay overlay -o lowerdir=${lowerdirs},upperdir=upper,workdir=workdir merged
-
     cd merged
 
 
@@ -36,11 +35,10 @@ function run_manual(){
         ../../../C/open "dir/$i.txt" "$result_dir/Filesystem_Open_C_Manual_$i.txt"
 
         # Java version
-        java -cp ../../../Java Main "dir/$1.txt" "$result_dir/Filesystem_Open_Java_Manual_$i.txt"
+        java -cp ../../../Java Main "dir/$i.txt" "$result_dir/Filesystem_Open_Java_Manual_$i.txt"
     done
 
     cd ..
-
     sudo umount overlay
 }
 
@@ -53,8 +51,8 @@ function run_container() {
     do
         c_result_file="Results/Filesystem_Open_C_Container_$i.txt"
         java_result_file="Results/Filesystem_Open_Java_Container_$i.txt"
-        docker run --name "$c_image" -it --rm --mount "$volume" "$c_image" ./open "dir/$i.txt" "$c_result_file"
-        docker run --name "$java_image" -it --rm --mount "$volume" "$java_image" java "Main" "dir/$i.txt" "$java_result_file"
+        docker run --name "$c_image" --rm --mount "$volume" "$c_image" ./open "dir/$i.txt" "$c_result_file"
+        docker run --name "$java_image" --rm --mount "$volume" "$java_image" java "Main" "dir/$i.txt" "$java_result_file"
     done
 }
 
@@ -66,7 +64,7 @@ function regular() {
 
     for i in {0..15}
     do
-	echo "$i von 15"
+	    echo "$((i + 1)) von 16"
         run_regular "$i"
     done 
 
@@ -81,7 +79,7 @@ function manual() {
 
     for i in {0..99}
     do
-	echo "$i von 100"
+	    echo "$((i + 1)) von 100"
         run_manual "$i"
     done
 
@@ -95,7 +93,7 @@ function container() {
 
     for i in {0..99}
     do
-	echo "$i von 100"
+	echo "$((i + 1)) von 100"
     	run_container
     done
 
