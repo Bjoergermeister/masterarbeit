@@ -5,6 +5,7 @@ clear.sh
 *.xlsx
 *.csv
 __pycache__
+.vscode
 
 # C object and binary files
 *.o
