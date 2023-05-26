@@ -11,5 +11,5 @@ timing:
 benchmark:
 	gcc -c $(common)/benchmark.c -o $(common)/benchmark.o
 
-build: timing benchmark tools
+build: timing benchmark
 	gcc write.c $(libs) -o write
