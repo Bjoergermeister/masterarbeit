@@ -16,7 +16,7 @@ public class Main {
 
         allocate_and_fill();
 
-        for (int i = ARRAYS.size(); i > 0; i--) {
+        for (int i = ARRAYS.size() - 1; i >= 0; i--) {
             int sum = 0;
             long start = System.nanoTime();
             byte[] array = ARRAYS.get(i);
@@ -27,10 +27,11 @@ public class Main {
 
             timeSum += end - start;
 
-            if (i % 600 == 0 && i < ARRAYS.size()) {
+            if (i % 600 == 0) {
+                long count = 128 - (i / 600);
                 save(
                         filePrefix,
-                        i / 600,
+                        count,
                         timeSum / 600);
                 timeSum = 0;
             }
