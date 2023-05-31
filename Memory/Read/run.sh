@@ -23,7 +23,7 @@ function manual() {
 
     mkdir -p /sys/fs/cgroup/memory/user.slice/masterarbeit
     echo "$((1024 * 1024 * 100))" > /sys/fs/cgroup/memory/user.slice/masterarbeit/memory.limit_in_bytes
-    echo $$ > /sys/fs/cgroup/memory/user.slice/masterarbeit/cgroups.procs
+    echo $$ > /sys/fs/cgroup/memory/user.slice/masterarbeit/cgroup.procs
 
     result_dir="../../Results"
     for i in {0..99}

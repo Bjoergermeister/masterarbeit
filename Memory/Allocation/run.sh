@@ -23,7 +23,8 @@ function manual() {
 
     mkdir -p /sys/fs/cgroup/memory/user.slice/masterarbeit
     echo "$((1024 * 1024 * 100))" > /sys/fs/cgroup/memory/user.slice/masterarbeit/memory.limit_in_bytes
-    echo $$ > /sys/fs/cgroup/memory/user.slice/masterarbeit/cgroups.procs
+    echo "$((1024 * 1024 * 200))" > /sys/fs/cgroup/memory/user.slice/masterarbeit/memory.memsw.limit_in_bytes
+    echo $$ > /sys/fs/cgroup/memory/user.slice/masterarbeit/cgroup.procs
 
     result_dir="../../Results"
     for i in {0..99}
@@ -47,6 +48,7 @@ function container() {
     java_image="masterarbeit-memory-allocation-java"
 
     memory_limit=$((1024 * 1024 * 100));
+    swap_limit=$((1024 * 1024 * 100 * 2));
 
     for i in {0..99}
     do
@@ -54,8 +56,8 @@ function container() {
 
         c_result_file="Results/Memory_Allocation_C_Container"
         java_result_file="Results/Memory_Allocation_Java_Container"
-        docker run --name "$c_image" --rm --mount "$volume" --memory "$memory_limit" "$c_image" ./allocation "$c_result_file"
-        docker run --name "$java_image" --rm --mount "$volume" --memory "$memory_limit" "$java_image" java "-Xms1024M" "-Xmx1024M" "Main" "$java_result_file"
+        docker run --name "$c_image" --rm --mount "$volume" --memory "$memory_limit" --memory-swap "$swap_limit" "$c_image" ./allocation "$c_result_file"
+        docker run --name "$java_image" --rm --mount "$volume" --memory "$memory_limit" --memory-swap "$swap_limit" "$java_image" java "-Xms1024M" "-Xmx1024M" "Main" "$java_result_file"
     done
 }
 
