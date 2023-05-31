@@ -15,6 +15,7 @@ write
 create
 delete
 allocation
+latency
 
 # Java
 *.class
