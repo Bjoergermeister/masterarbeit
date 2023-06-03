@@ -120,10 +120,10 @@ void configure_ip_header(struct ip *ip, int length, struct sockaddr_in source_ad
     ip->ip_ttl = 255;
     ip->ip_tos = 0;
     ip->ip_p = IPPROTO_ICMP;
-    ip->ip_id = htons(0);
+    ip->ip_id = htons(321);
     ip->ip_off = htons(0);
     ip->ip_hl = 5;
-    ip->ip_len = htons(68);
+    ip->ip_len = htons(length);
     ip->ip_sum = cksum((unsigned short *)ip, ip->ip_hl);
     // Set ip addresses
     ip->ip_src = source_address.sin_addr;
@@ -134,7 +134,7 @@ void configure_icmp_header(struct icmp *icmp)
 {
     icmp->icmp_code = 0;
     icmp->icmp_type = ICMP_ECHO;
-    icmp->icmp_hun.ih_idseq.icd_id = 1;
+    icmp->icmp_hun.ih_idseq.icd_id = 123;
     icmp->icmp_hun.ih_idseq.icd_seq = 0;
     icmp->icmp_cksum = cksum((unsigned short *)icmp, sizeof(struct icmp));
 }
@@ -153,6 +153,7 @@ int main(int argc, char **argv)
     // Create buffer to hold the packet data
     int packet_size = sizeof(struct ip) + sizeof(struct icmp);
     char packet[packet_size];
+    memset(packet, 0, packet_size);
 
     // Place ip struct at the beginning of the buffer and and icmp struct immediatly after that
     struct ip *ip = (struct ip *)packet;
@@ -169,11 +170,14 @@ int main(int argc, char **argv)
         exit(-1);
     }
 
-    /*
-    packet[0] = 0x08;
-    packet[2] = 0x58;
-    packet[3] = 0xb5;
-    */
+    /* Socket options, tell the kernel we provide the IP structure */
+    int on = 1;
+    if (setsockopt(socket, IPPROTO_IP, IP_HDRINCL, &on, sizeof(on)) < 0)
+    {
+        perror("setsockopt() for IP_HDRINCL error");
+        exit(EXIT_FAILURE);
+    }
+
     struct sockaddr *dest = (struct sockaddr *)&destination_address;
     long bytes_send = sendto(socket, packet, packet_size, 0, dest, sizeof(struct sockaddr));
     if (bytes_send == -1)
@@ -181,7 +185,7 @@ int main(int argc, char **argv)
         perror("sendto: ");
         exit(-1);
     }
-    /*
+
     fd_set sockets;
     FD_ZERO(&sockets);
     FD_SET(socket, &sockets);
@@ -193,13 +197,6 @@ int main(int argc, char **argv)
     {
         perror("select(): ");
         exit(-1);
-    }
-    */
-
-    for (int i = 0; i < packet_size; i++)
-    {
-        unsigned char character = packet[i];
-        printf("inputCstr[%d] = %d, %x, %c\n", i, character, character, character);
     }
 
     printf("%s, %ld\n", packet, sizeof(packet));
