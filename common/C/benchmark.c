@@ -47,6 +47,19 @@ void save_benchmark_result(long time, char *filename)
     handle_error(success, filename);
 }
 
+void save_benchmark_result_float(float time, char *filename)
+{
+    FILE *fd = open_file(filename);
+
+    int result = fprintf(fd, "%f\n", time);
+    if (result <= 0)
+    {
+        perror(filename);
+    }
+    int success = fclose(fd);
+    handle_error(success, filename);
+}
+
 void save_benchmark_result_partial(long time, int count, char *prefix)
 {
     char filename[50];
