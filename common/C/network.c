@@ -37,21 +37,6 @@ unsigned short cksum(unsigned short *addr, int len)
     return (answer);
 }
 
-char *get_interface_family(struct ifaddrs *ifaddr)
-{
-    switch (ifaddr->ifa_addr->sa_family)
-    {
-    case AF_PACKET:
-        return "AF_PACKET";
-    case AF_INET:
-        return "IPv4";
-    case AF_INET6:
-        return "IPv6";
-    default:
-        return "?";
-    }
-}
-
 int skip_interface(struct ifaddrs *interface)
 {
     return (interface->ifa_addr == NULL || interface->ifa_addr->sa_family != AF_INET);
