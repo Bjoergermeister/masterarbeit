@@ -46,7 +46,7 @@ def process_file(path, type, operation, language, mode, case):
     file = open(path, "r")
     list = get_target_list(type, operation, language, mode, case)
     for line in file.readlines():
-        if operation == "Write":
+        if operation == "Write" and type == "Filesystem":
             measurements = [int(x) for x in line.split(", ")]
             list.append((measurements[0], measurements[1]))
         else:
