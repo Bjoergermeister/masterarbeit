@@ -1,5 +1,5 @@
 common = ../../../common/C
-libs = $(common)/timing.o $(common)/benchmark.o
+libs = $(common)/timing.o $(common)/benchmark.o $(common)/network.o
 
 timing:
 	gcc -c $(common)/timing.c -o $(common)/timing.o
@@ -7,8 +7,8 @@ timing:
 benchmark:
 	gcc -c $(common)/benchmark.c -o $(common)/benchmark.o
 
-build: timing benchmark
-	gcc latency.c $(libs) -o latency
+network:
+	gcc -c $(common)/network.c -o $(common)/network.o
 
-build-debug: timing benchmark
-	gcc latency.c $(libs) -g -o latency
+build: timing benchmark network
+	gcc latency.c $(libs) -o latency
