@@ -35,7 +35,7 @@ function manual() {
         C/allocation "$result_dir/Memory_Allocation_C_Manual"
 
         # Java version
-        java -cp Java Main "$result_dir/Memory_Allocation_Java_Manual"
+        java -cp Java -Xmx1024M -Xms1024M Main "$result_dir/Memory_Allocation_Java_Manual"
     done
 
     mdir /sys/fs/cgroup/memory/user.slice/masterarbeit

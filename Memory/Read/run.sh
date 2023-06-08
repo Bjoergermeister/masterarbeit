@@ -34,7 +34,7 @@ function manual() {
         C/read "$result_dir/Memory_Read_C_Manual"
 
         # Java version
-        java -cp Java Main "$result_dir/Memory_Read_Java_Manual"
+        java -cp Java -Xmx1024M -Xms1024M Main "$result_dir/Memory_Read_Java_Manual"
     done
 
     mdir /sys/fs/cgroup/memory/user.slice/masterarbeit
@@ -47,6 +47,7 @@ function container() {
     java_image="masterarbeit-memory-read-java"
 
     memory_limit=$((1024 * 1024 * 100));
+    swap_limit=-1 #Must be set so that the containers have enough swap memory to run. If unset, memory and swap usage would be limited to 100MB each
 
     for i in {0..99}
     do
@@ -54,8 +55,8 @@ function container() {
 
         c_result_file="Results/Memory_Read_C_Container"
         java_result_file="Results/Memory_Read_Java_Container"
-        docker run --name "$c_image" --rm --mount "$volume" --memory "$memory_limit" "$c_image" ./read "$c_result_file"
-        docker run --name "$java_image" --rm --mount "$volume" --memory "$memory_limit" "$java_image" java "-Xmx1024M" "-Xms1024M" "Main" "$java_result_file"
+        docker run --name "$c_image" --rm --mount "$volume" --memory "$memory_limit" --memory-swap="$swap_limit" "$c_image" ./read "$c_result_file"
+        docker run --name "$java_image" --rm --mount "$volume" --memory "$memory_limit" --memory-swap="$swap_limit" "$java_image" java "-Xmx1024M" "-Xms1024M" "Main" "$java_result_file"
     done
 }
 

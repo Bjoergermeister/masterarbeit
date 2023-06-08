@@ -35,7 +35,7 @@ function manual() {
         C/write "$result_dir/Memory_Write_C_Manual"
 
         # Java version
-        java -cp Java Main "$result_dir/Memory_Write_Java_Manual"
+        java -cp Java -Xmx1024M -Xms1024M Main "$result_dir/Memory_Write_Java_Manual"
     done
 
     mdir /sys/fs/cgroup/memory/user.slice/masterarbeit
