@@ -5,6 +5,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <unistd.h>
 
 #include <netinet/in.h>
 #include <netinet/ip.h>
@@ -86,5 +87,7 @@ int main(int argc, char **argv)
 
         float difference = (float)calculate_time_difference(&start, &end) / NANOSECONDS_IN_ONE_MILLISECOND;
         save_benchmark_result_float(difference, save_filename);
+
+        sleep(1);
     }
 }
