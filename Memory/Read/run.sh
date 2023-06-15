@@ -1,5 +1,7 @@
 #!/bin/bash
 
+jvm_args="-Xmx1024M -Xms1024M -XX:+UnlockExperimentalVMOptions -XX:+UseEpsilonGC"
+
 # Prepare and run regular tests
 function regular() {
     echo "Executing tests in regular mode"
@@ -13,7 +15,7 @@ function regular() {
         C/read "${result_dir}/Memory_Read_C_Regular"
 
         # Java version
-        java -cp Java/ Main "${result_dir}/Memory_Read_Java_Regular"
+        java -cp Java/ $jvm_args Main "${result_dir}/Memory_Read_Java_Regular"
     done
 }
 
@@ -23,6 +25,7 @@ function manual() {
 
     mkdir -p /sys/fs/cgroup/memory/user.slice/masterarbeit
     echo "$((1024 * 1024 * 100))" > /sys/fs/cgroup/memory/user.slice/masterarbeit/memory.limit_in_bytes
+    echo -1 > /sys/fs/cgroup/memory/user.slice/masterarbeit/memory.memsw.limit_in_bytes
     echo $$ > /sys/fs/cgroup/memory/user.slice/masterarbeit/cgroup.procs
 
     result_dir="../../Results"
@@ -34,10 +37,10 @@ function manual() {
         C/read "$result_dir/Memory_Read_C_Manual"
 
         # Java version
-        java -cp Java -Xmx1024M -Xms1024M Main "$result_dir/Memory_Read_Java_Manual"
+        java -cp Java $jvm_args Main "$result_dir/Memory_Read_Java_Manual"
     done
 
-    mdir /sys/fs/cgroup/memory/user.slice/masterarbeit
+    rmdir /sys/fs/cgroup/memory/user.slice/masterarbeit
 }
 
 # Prepare and run container tests
@@ -56,7 +59,7 @@ function container() {
         c_result_file="Results/Memory_Read_C_Container"
         java_result_file="Results/Memory_Read_Java_Container"
         docker run --name "$c_image" --rm --mount "$volume" --memory "$memory_limit" --memory-swap="$swap_limit" "$c_image" ./read "$c_result_file"
-        docker run --name "$java_image" --rm --mount "$volume" --memory "$memory_limit" --memory-swap="$swap_limit" "$java_image" java "-Xmx1024M" "-Xms1024M" "Main" "$java_result_file"
+        docker run --name "$java_image" --rm --mount "$volume" --memory "$memory_limit" --memory-swap="$swap_limit" "$java_image" java $jvm_args "Main" "$java_result_file"
     done
 }
 
