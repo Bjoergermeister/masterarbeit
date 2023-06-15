@@ -48,7 +48,7 @@ int main(int argc, char **argv)
         }
         clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end);
 
-        long difference = calculate_time_difference(&start, &end);
+        long difference = calculate_time_difference(&start, &end) / NANOSECONDS_IN_ONE_MICROSECOND;
         time_sum += difference;
 
         allocation_counter++;

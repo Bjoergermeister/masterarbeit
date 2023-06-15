@@ -36,7 +36,7 @@ int main(int argc, char **argv)
             exit(-1);
         }
 
-        long time_difference = calculate_time_difference(&start, &end);
+        long time_difference = calculate_time_difference(&start, &end) / NANOSECONDS_IN_ONE_MICROSECOND;
         time_sum += time_difference;
 
         allocation_counter++;

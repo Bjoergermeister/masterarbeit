@@ -7,6 +7,7 @@ public class Main {
 
     private static final int PAGE_SIZE = 4096;
     private static final long THREE_HUNDRED_MEGABYTES = 1024 * 1024 * 300;
+    private static final long NANOSECONDS_IN_ONE_MICROSECOND = 1000;
 
     public static void main(String[] args) throws NoSuchFieldException, IllegalAccessException {
         String filePrefix = args[0];
@@ -25,7 +26,7 @@ public class Main {
             }
             long end = System.nanoTime();
 
-            timeSum += (end - start);
+            timeSum += (end - start) / NANOSECONDS_IN_ONE_MICROSECOND;
 
             total_allocated_memory += 4096;
             allocationCounter++;

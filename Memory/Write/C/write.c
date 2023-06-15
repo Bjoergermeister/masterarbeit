@@ -34,7 +34,7 @@ int main(int argc, char **argv)
         memset(page, 1, page_size);
         clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end);
 
-        long time_difference = calculate_time_difference(&start, &end);
+        long time_difference = calculate_time_difference(&start, &end) / NANOSECONDS_IN_ONE_MICROSECOND;
         time_sum += time_difference;
 
         allocation_counter++;

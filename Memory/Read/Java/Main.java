@@ -7,6 +7,7 @@ public class Main {
 
     private static final int PAGE_SIZE = 4096;
     private static final long THREE_HUNDRED_MEGABYTES = 1024 * 1024 * 300;
+    private static final long NANOSECONDS_IN_ONE_MICROSECOND = 1000;
     private static final ArrayList<byte[]> ARRAYS = new ArrayList<byte[]>();
 
     public static void main(String[] args) throws NoSuchFieldException, IllegalAccessException {
@@ -25,7 +26,7 @@ public class Main {
             }
             long end = System.nanoTime();
 
-            timeSum += end - start;
+            timeSum += (end - start) / NANOSECONDS_IN_ONE_MICROSECOND;
 
             if (i % 600 == 0) {
                 long count = 128 - (i / 600);
