@@ -19,3 +19,6 @@ latency
 
 # Java
 *.class
+
+# Specific tools for testing/debugging
+tools/list_interfaces
