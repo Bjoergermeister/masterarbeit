@@ -42,17 +42,17 @@ int skip_interface(struct ifaddrs *interface)
     return (interface->ifa_addr == NULL || interface->ifa_addr->sa_family != AF_INET);
 }
 
-void configure_sockaddr(struct sockaddr_in *socket_address, char *address)
+void configure_sockaddr(struct sockaddr_in *socket_address, char *address, int port)
 {
     socket_address->sin_family = AF_INET; // IPv4
-    socket_address->sin_port = htons(0);
+    socket_address->sin_port = htons(port);
     inet_aton(address, &socket_address->sin_addr);
     memset(socket_address->sin_zero, 0, 8);
 }
 
-int open_socket()
+int open_socket(int type, int protocol)
 {
-    int socket_fd = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP);
+    int socket_fd = socket(AF_INET, type, protocol);
     if (socket_fd == -1)
     {
         perror("Open socket");

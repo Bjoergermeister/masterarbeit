@@ -25,10 +25,10 @@ int main(int argc, char **argv)
     struct timespec end;
 
     struct sockaddr_in source_address;
-    configure_sockaddr(&source_address, source_ip_address);
+    configure_sockaddr(&source_address, source_ip_address, 0);
 
     struct sockaddr_in destination_address;
-    configure_sockaddr(&destination_address, destination_ip_address);
+    configure_sockaddr(&destination_address, destination_ip_address, 0);
 
     // Create buffer to hold the packet data
     int packet_size = sizeof(struct ip) + sizeof(struct icmp);
@@ -42,7 +42,7 @@ int main(int argc, char **argv)
     configure_ip_header(ip, sizeof(packet), source_address, destination_address);
     configure_icmp_header(icmp);
 
-    int socket = open_socket();
+    int socket = open_socket(SOCK_RAW, IPPROTO_ICMP);
     int bind_success = bind(socket, (struct sockaddr *)&source_address, sizeof(struct sockaddr));
     if (bind_success == -1)
     {
