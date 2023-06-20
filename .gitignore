@@ -16,6 +16,8 @@ create
 delete
 allocation
 latency
+client
+server
 
 # Java
 *.class
