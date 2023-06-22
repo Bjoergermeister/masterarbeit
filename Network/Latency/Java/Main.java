@@ -1,7 +1,6 @@
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
@@ -36,7 +35,7 @@ public class Main {
                     System.exit(-1);
                 }
 
-                float result = (float) (end - start) / 1000000;
+                float result = (float) (end - start) / 1000.0f;
                 save(saveFileName, result);
 
                 try {

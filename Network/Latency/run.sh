@@ -7,10 +7,10 @@ function regular() {
     result_dir="../../Results"
 
     # C version
-    sudo C/latency 192.168.178.37 192.168.178.1 "${result_dir}/Network_Latency_C_Regular"
+    sudo C/latency 192.168.178.37 192.168.178.1 "${result_dir}/Network_Latency_C_Regular.txt"
 
     # Java version
-    java -cp Java/ Main 192.168.178.37 192.168.178.1 "${result_dir}/Network_Latency_Java_Regular"
+    java -cp Java/ Main 192.168.178.37 192.168.178.1 "${result_dir}/Network_Latency_Java_Regular.txt"
 }
 
 # Prepare and run manual tests
@@ -32,10 +32,10 @@ function manual() {
     # Execute the ping programs
     result_dir="../../Results"
     # C version
-    sudo ip netns exec container C/latency 172.19.0.2 192.168.178.1 "$result_dir/Network_Latency_C_Manual"
+    sudo ip netns exec container C/latency 172.19.0.2 192.168.178.1 "$result_dir/Network_Latency_C_Manual.txt"
 
     # Java version
-    sudo ip netns exec container java -cp Java Main 172.19.0.2 192.168.178.1 "$result_dir/Network_Latency_Java_Manual"
+    sudo ip netns exec container java -cp Java Main 172.19.0.2 192.168.178.1 "$result_dir/Network_Latency_Java_Manual.txt"
 
     # Remove container networking
     sudo ip netns delete container
@@ -49,8 +49,8 @@ function container() {
     c_image="masterarbeit-network-latency-c"
     java_image="masterarbeit-network-latency-java"
 
-    c_result_file="Results/Network_Latency_C_Container"
-    java_result_file="Results/Network_Latency_Java_Container"
+    c_result_file="Results/Network_Latency_C_Container.txt"
+    java_result_file="Results/Network_Latency_Java_Container.txt"
     docker run --name "$c_image" --rm --mount "$volume" --ip 172.17.0.2 -it "$c_image" ./latency "172.17.0.2" "192.168.178.1" "$c_result_file"
     docker run --name "$java_image" --rm --mount "$volume" "$java_image" java "Main" "172.17.0.2" "192.168.178.1" "$java_result_file"
 }

@@ -85,7 +85,7 @@ int main(int argc, char **argv)
 
         clock_gettime(CLOCK_MONOTONIC, &end);
 
-        float difference = (float)calculate_time_difference(&start, &end) / NANOSECONDS_IN_ONE_MILLISECOND;
+        float difference = calculate_time_difference(&start, &end) / (float)NANOSECONDS_IN_ONE_MICROSECOND;
         save_benchmark_result_float(difference, save_filename);
 
         sleep(1);
