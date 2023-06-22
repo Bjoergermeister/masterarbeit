@@ -40,7 +40,7 @@ function manual() {
         java -cp Java $jvm_args Main "$result_dir/Memory_Write_Java_Manual"
     done
 
-    mdir /sys/fs/cgroup/memory/user.slice/masterarbeit
+    rmdir /sys/fs/cgroup/memory/user.slice/masterarbeit
 }
 
 # Prepare and run container tests

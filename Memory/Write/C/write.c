@@ -22,7 +22,7 @@ int main(int argc, char **argv)
     void *page;
     long total_allocated_memory = 0;
     long page_size = sysconf(_SC_PAGE_SIZE);
-    long time_sum = 0;
+    float time_sum = 0;
     int allocation_success = 0;
     int allocation_counter = 0;
 
@@ -34,7 +34,7 @@ int main(int argc, char **argv)
         memset(page, 1, page_size);
         clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end);
 
-        long time_difference = calculate_time_difference(&start, &end) / NANOSECONDS_IN_ONE_MICROSECOND;
+        float time_difference = calculate_time_difference(&start, &end) / (float)NANOSECONDS_IN_ONE_MICROSECOND;
         time_sum += time_difference;
 
         allocation_counter++;
@@ -43,7 +43,7 @@ int main(int argc, char **argv)
         // Save average time over 600 allocations in order to reduce result space
         if (allocation_counter % 600 == 0 && allocation_counter > 0)
         {
-            long time = time_sum / 600;
+            float time = time_sum / 600;
             save_benchmark_result_partial(
                 time,
                 (int)(allocation_counter / 600),

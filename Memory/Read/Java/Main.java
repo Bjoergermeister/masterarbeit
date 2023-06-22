@@ -13,7 +13,7 @@ public class Main {
     public static void main(String[] args) throws NoSuchFieldException, IllegalAccessException {
         String filePrefix = args[0];
 
-        long timeSum = 0;
+        float timeSum = 0;
 
         allocate_and_fill();
 
@@ -26,7 +26,7 @@ public class Main {
             }
             long end = System.nanoTime();
 
-            timeSum += (end - start) / NANOSECONDS_IN_ONE_MICROSECOND;
+            timeSum += (end - start) / (float) NANOSECONDS_IN_ONE_MICROSECOND;
 
             if (i % 600 == 0) {
                 long count = 128 - (i / 600);
@@ -53,13 +53,13 @@ public class Main {
         }
     }
 
-    static void save(String prefix, long count, long result) {
+    static void save(String prefix, long count, float result) {
         String fileName = String.format("%s_%d.txt", prefix, count);
         try {
             FileWriter fileWriter = new FileWriter(fileName, true);
             BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
 
-            bufferedWriter.append(Long.toString(result) + "\n");
+            bufferedWriter.append(Float.toString(result) + "\n");
             bufferedWriter.close();
         } catch (IOException ex) {
             System.out.println(ex.getMessage());

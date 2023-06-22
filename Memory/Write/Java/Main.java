@@ -14,7 +14,7 @@ public class Main {
 
         long total_allocated_memory = 0;
         long allocationCounter = 0;
-        long timeSum = 0;
+        float timeSum = 0;
         ArrayList<byte[]> arrays = new ArrayList<byte[]>();
 
         while (total_allocated_memory < THREE_HUNDRED_MEGABYTES) {
@@ -26,7 +26,7 @@ public class Main {
             }
             long end = System.nanoTime();
 
-            timeSum += (end - start) / NANOSECONDS_IN_ONE_MICROSECOND;
+            timeSum += (end - start) / (float) NANOSECONDS_IN_ONE_MICROSECOND;
 
             total_allocated_memory += 4096;
             allocationCounter++;
@@ -42,13 +42,13 @@ public class Main {
         }
     }
 
-    public static void save(String prefix, long count, long result) {
+    public static void save(String prefix, long count, float result) {
         String fileName = String.format("%s_%d.txt", prefix, count);
         try {
             FileWriter fileWriter = new FileWriter(fileName, true);
             BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
 
-            bufferedWriter.append(Long.toString(result) + "\n");
+            bufferedWriter.append(Float.toString(result) + "\n");
             bufferedWriter.close();
         } catch (IOException ex) {
             System.out.println(ex.getMessage());

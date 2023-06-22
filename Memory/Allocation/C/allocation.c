@@ -19,7 +19,7 @@ int main(int argc, char **argv)
     void *previous_break = current_break;
     long total_allocated_memory = 0;
     long page_size = sysconf(_SC_PAGE_SIZE);
-    long time_sum = 0;
+    float time_sum = 0;
     int allocation_success = 0;
     int allocation_counter = 0;
 
@@ -36,7 +36,7 @@ int main(int argc, char **argv)
             exit(-1);
         }
 
-        long time_difference = calculate_time_difference(&start, &end) / NANOSECONDS_IN_ONE_MICROSECOND;
+        float time_difference = calculate_time_difference(&start, &end) / (float)NANOSECONDS_IN_ONE_MICROSECOND;
         time_sum += time_difference;
 
         allocation_counter++;
@@ -45,7 +45,7 @@ int main(int argc, char **argv)
 
         if (allocation_counter % 600 == 0 && allocation_counter > 0)
         {
-            long time = time_sum / 600;
+            float time = time_sum / 600.0f;
             save_benchmark_result_partial(
                 time,
                 (int)(allocation_counter / 600),

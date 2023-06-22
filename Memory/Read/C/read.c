@@ -30,7 +30,7 @@ int main(int argc, char **argv)
 
     long page_size = sysconf(_SC_PAGE_SIZE);
     long total_page_count = MAX_ALLOCATED_MEMORY / page_size;
-    long time_sum = 0;
+    float time_sum = 0;
     int allocation_counter = 0;
 
     void *pages[76800];
@@ -48,14 +48,14 @@ int main(int argc, char **argv)
         }
         clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end);
 
-        long difference = calculate_time_difference(&start, &end) / NANOSECONDS_IN_ONE_MICROSECOND;
+        float difference = calculate_time_difference(&start, &end) / (float)NANOSECONDS_IN_ONE_MICROSECOND;
         time_sum += difference;
 
         allocation_counter++;
 
         if (allocation_counter % 600 == 0 && allocation_counter > 0)
         {
-            long time = time_sum / 600;
+            float time = time_sum / 600;
             save_benchmark_result_partial(
                 time,
                 (int)(allocation_counter / 600),
