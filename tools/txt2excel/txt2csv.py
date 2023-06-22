@@ -20,7 +20,7 @@ second = lambda list: [element[1] for element in list]
 def calculate_average(times):
     if len(times) < 20:
         return ""
-    return round(sum(sorted(times)[5:-5]) / len(times) - 10, 2)
+    return round(sum(sorted(times)[5:-5]) / (len(times) - 10), 2)
 
 def write_filesystem_create(writer, operation, language):
     regular_value = calculate_average(benchmarks["Filesystem"]["Create"][language]["Regular"])
@@ -50,6 +50,9 @@ def write_memory(writer, operation, language):
     except KeyError as error:
         print(error, operation, language, index)
 
+def write_network(writer, operation, language):
+    write_row(writer, "Network", operation, language, 1)
+
 def write_row(writer, type, operation, language, index):
     regular_value = get_value(type, operation, language, "Regular", index)
     manual_value = get_value(type, operation, language, "Manual", index)
@@ -57,6 +60,9 @@ def write_row(writer, type, operation, language, index):
     writer.writerow([index, regular_value, manual_value, container_value]) 
 
 def get_value(type, operation, language, mode, index):
+    if type == "Network":
+        return calculate_average(benchmarks[type][operation][language][mode])
+
     if index in benchmarks[type][operation][language][mode]:
         return calculate_average(benchmarks[type][operation][language][mode][index])
     else:
@@ -67,12 +73,12 @@ def write_csv(filename, func, operation, language):
     with open(filename, "w", newline='') as file:
         writer = csv.writer(file)
 
-        field = HEADERS["Write"] if operation == "Write" and type == "Filesystem" else HEADERS["Other"]
+        field = HEADERS["Write"] if operation == "Write" and filename.startswith("Filesystem") else HEADERS["Other"]
         writer.writerow(field)
         func(writer, operation, language)
 
-if __name__ == "__main__":
-    import_data("../../Results", benchmarks)
+if __name__ == "__main__": 
+    import_data(f"../../Results", benchmarks)
 
     for language in ["C", "Java"]:
         # Filesystem
@@ -85,3 +91,6 @@ if __name__ == "__main__":
         # Memory
         for operation in ["Allocation", "Write", "Read"]:
             write_csv(f"../../Memory_{operation}_{language}.csv", write_memory, operation, language)
+
+        for operation in ["Latency", "Throughput"]:
+            write_csv(f"../../Network_{operation}_{language}.csv", write_network, operation, language)
