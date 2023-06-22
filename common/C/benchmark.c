@@ -60,11 +60,11 @@ void save_benchmark_result_float(float time, char *filename)
     handle_error(success, filename);
 }
 
-void save_benchmark_result_partial(long time, int count, char *prefix)
+void save_benchmark_result_partial(float time, int count, char *prefix)
 {
     char filename[50];
     snprintf(filename, 50, "%s_%d.txt", prefix, count);
-    save_benchmark_result(time, filename);
+    save_benchmark_result_float(time, filename);
 }
 
 void handle_error(int return_value, char *filename)

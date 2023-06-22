@@ -19,6 +19,7 @@
 #define STOP_FLAG "\0\0\0\0\0\0\0\0"
 #define STOP_FLAG_LENGTH 8
 #define BYTES_IN_ONE_MEGABYTE (1024 * 1024)
+#define PORT 5000
 
 float calculate_throughput(long bytes, long time_difference)
 {
@@ -46,10 +47,10 @@ int main(int argc, char **argv)
     struct timespec end;
 
     struct sockaddr_in server_address;
-    configure_sockaddr(&server_address, server_ip_address, 3000);
+    configure_sockaddr(&server_address, server_ip_address, PORT);
 
     struct sockaddr_in client_address;
-    configure_sockaddr(&client_address, client_ip_address, 3000);
+    configure_sockaddr(&client_address, client_ip_address, PORT);
 
     int socket = open_socket(SOCK_DGRAM, IPPROTO_UDP);
 

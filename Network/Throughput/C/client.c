@@ -15,7 +15,7 @@
 #include "../../../common/C/benchmark.h"
 #include "../../../common/C/network.h"
 
-#define BYTES_IN_ONE_GIGABYTE (1024 * 1024 * 1024)
+#define BYTES_IN_ONE_GIGABYTE (1024 * 1024 * 256)
 
 float process_response(char *response)
 {
@@ -33,7 +33,7 @@ int main(int argc, char **argv)
     struct timespec end;
 
     struct sockaddr_in destination_address;
-    configure_sockaddr(&destination_address, destination_ip_address, 3000);
+    configure_sockaddr(&destination_address, destination_ip_address, 5000);
 
     int socket = open_socket(SOCK_DGRAM, IPPROTO_UDP);
 
