@@ -73,7 +73,7 @@ def write_csv(filename, func, operation, language):
     with open(filename, "w", newline='') as file:
         writer = csv.writer(file)
 
-        field = HEADERS["Write"] if operation == "Write" and filename.startswith("Filesystem") else HEADERS["Other"]
+        field = HEADERS["Write"] if operation == "Write" and "Filesystem" in filename else HEADERS["Other"]
         writer.writerow(field)
         func(writer, operation, language)
 
