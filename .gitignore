@@ -24,3 +24,4 @@ server
 
 # Specific tools for testing/debugging
 tools/list_interfaces
+tests/
