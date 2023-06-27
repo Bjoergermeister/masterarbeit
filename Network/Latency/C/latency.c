@@ -62,9 +62,6 @@ int main(int argc, char **argv)
     fd_set sockets;
     FD_ZERO(&sockets);
     FD_SET(socket, &sockets);
-    struct timeval timeout;
-    timeout.tv_sec = 5;
-    timeout.tv_usec = 0;
 
     struct sockaddr *dest = (struct sockaddr *)&destination_address;
     socklen_t dest_length = sizeof(struct sockaddr *);
