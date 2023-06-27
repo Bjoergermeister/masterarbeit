@@ -72,7 +72,6 @@ void handle_error(int return_value, char *filename)
     if (return_value == 0)
         return;
 
-    printf("%d\n", return_value);
     char *message = "Ein Fehler ist aufgetreten: ";
     char string[256];
     snprintf(string, 256, "%s %s", message, filename);
