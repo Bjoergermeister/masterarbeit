@@ -17,10 +17,10 @@
 
 #define BYTES_IN_ONE_GIGABYTE (1024 * 1024 * 256)
 
-float process_response(char *response)
+float process_response(char *response, float *throughput, int *packet_count)
 {
-    long long throughput_as_ll = strtoll(response, NULL, 10);
-    return *(float *)&throughput_as_ll;
+    *throughput = *(float *)response;
+    *packet_count = *(int *)(response + sizeof(int) + 1);
 }
 
 int main(int argc, char **argv)
@@ -75,6 +75,9 @@ int main(int argc, char **argv)
         exit(-1);
     }
 
-    float result = process_response(response);
+    float throughput = 0;
+    int packet_count = 0;
+    float result = process_response(response, &throughput, &packet_count);
+    printf("%f, %d, %d (%d)\n", throughput, packet_count, send_count, send_count - packet_count);
     save_benchmark_result_float(result, save_filename);
 }

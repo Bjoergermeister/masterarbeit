@@ -11,10 +11,10 @@ function regular() {
         echo "$((i + 1)) von 25"
 
         # C version
-        #C/client 192.168.178.37 192.168.178.27 "${result_dir}/Network_Throughput_C_Regular.txt"
+        C/client $SOURCE_IP $DESTINATION_IP "${result_dir}/Network_Throughput_C_Regular.txt"
 
         # Java version
-        java -cp Java/ Client 192.168.178.37 192.168.178.27 "${result_dir}/Network_Throughput_Java_Regular.txt"
+        #java -cp Java/ Client 192.168.178.37 192.168.178.27 "${result_dir}/Network_Throughput_Java_Regular.txt"
     done
 }
 
@@ -43,11 +43,8 @@ function manual() {
     do
         echo "$((i + 1)) von 25"
 
-        #sudo ip netns exec container C/client 172.19.0.2 192.168.178.27 "$result_dir/Network_Throughput_C_Manual.txt"
-
-        # Java version
-        #sudo ip netns exec container ping 192.168.178.27
-        sudo ip netns exec container java -cp Java Client 172.19.0.2 192.168.178.27 "$result_dir/Network_Throughput_Java_Manual.txt"
+        sudo ip netns exec container C/client 172.19.0.2 $DESTINATION_IP "$result_dir/Network_Throughput_C_Manual.txt"
+        #sudo ip netns exec container java -cp Java Client 172.19.0.2 $DESTINATION_IP "$result_dir/Network_Throughput_Java_Manual.txt"
     done
 
     # Remove container networking
@@ -69,8 +66,8 @@ function container() {
     do
         echo "$((i + 1)) von 25"
 
-        #docker run --name "$c_image" --rm -p 5000:5000 --mount "$volume" --ip 172.17.0.2 "$c_image" ./client "172.17.0.2" "192.168.178.27" "$c_result_file"
-        docker run --name "$java_image" -p 3000:3000 --rm --mount "$volume" "$java_image" java "Client" "172.17.0.2" "192.168.178.27" "$java_result_file"
+        docker run --name "$c_image" --rm -p 5000:5000 --mount "$volume" --ip 172.17.0.2 "$c_image" ./client "172.17.0.2" "$DESTINATION_IP" "$c_result_file"
+        #docker run --name "$java_image" -p 3000:3000 --rm --mount "$volume" "$java_image" java "Client" "172.17.0.2" "192.168.178.27" "$java_result_file"
     done
 }
 

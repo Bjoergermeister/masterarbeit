@@ -29,6 +29,18 @@ float calculate_throughput(long bytes, long time_difference)
     return megabytes / time_in_seconds;
 }
 
+void write_response(char *buffer, long bytes, int packets, long time_difference)
+{
+    float throughput = calculate_throughput(bytes, time_difference);
+
+    int *throughput_address = (int *)buffer;
+    int *packets_address = (int *)(buffer + sizeof(int) + 1);
+
+    *throughput_address = *(int *)&throughput;
+    *packets_address = packets;
+}
+
+/*
 void write_response(char *buffer, long bytes, long time_difference)
 {
     float throughput = calculate_throughput(bytes, time_difference);
@@ -36,6 +48,7 @@ void write_response(char *buffer, long bytes, long time_difference)
 
     sprintf(buffer, "%ld\n", throughput_as_int);
 }
+*/
 
 int main(int argc, char **argv)
 {
@@ -104,7 +117,7 @@ int main(int argc, char **argv)
         // Send response with time to client
         size_t buffer_size = 100;
         char response[buffer_size];
-        write_response(response, total_bytes_received, difference);
+        write_response(response, total_bytes_received, receive_count, difference);
 
         int result = sendto(socket, response, buffer_size, 0, client, length);
         if (result == -1)
