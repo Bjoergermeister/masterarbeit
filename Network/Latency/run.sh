@@ -54,6 +54,18 @@ function container() {
     docker run --name "$java_image" --rm --mount "$volume" "$java_image" java "Main" "172.17.0.2" "192.168.178.1" "$java_result_file"
 }
 
+# Prepare and run container tests in privileged mode
+function privileged() {
+    volume="type=bind,source=$(pwd)/../../Results,target=/Results"
+    c_image="masterarbeit-network-latency-c"
+    java_image="masterarbeit-network-latency-java"
+    c_result_file="Results/Network_Latency_C_Privileged.txt"
+    java_result_file="Results/Network_Latency_Java_Privileged.txt"
+    
+    docker run --name "$c_image" --rm --privileged --mount "$volume" --ip 172.17.0.2 -it "$c_image" ./latency "172.17.0.2" "192.168.178.1" "$c_result_file"
+    docker run --name "$java_image" --rm --privileged --mount "$volume" "$java_image" java "Main" "172.17.0.2" "192.168.178.1" "$java_result_file"
+}
+
 # Prepare and execute tests
 
 if [ "$1" = "regular"  ] || [ "$1" = "" ] 
@@ -69,4 +81,9 @@ fi
 if [ "$1" = "container"  ] || [ "$1" = "" ] 
 then
     container
+fi
+
+if [ "$1" = "privileged"  ] || [ "$1" = "" ] 
+then
+    privileged
 fi

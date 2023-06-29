@@ -65,6 +65,23 @@ function container() {
     done
 }
 
+# Prepare and run container tests in privileged mode
+function privileged() {
+    volume="type=bind,source=$(pwd)/../../Results,target=/Results"
+    c_image="masterarbeit-network-throughput-c"
+    java_image="masterarbeit-network-throughput-java"
+
+    c_result_file="Results/Network_Throughput_C_Privileged.txt"
+    java_result_file="Results/Network_Throughput_Java_Privileged.txt"
+
+    for i in {0..25}
+    do
+        echo "$((i + 1)) von 25"
+        docker run --name "$c_image" --rm -p 5000:5000 --privileged --mount "$volume" --ip 172.17.0.2 "$c_image" ./client "172.17.0.2" "$DESTINATION_IP" "$c_result_file"
+        docker run --name "$java_image" --rm -p 3000:3000 --privileged --mount "$volume" "$java_image" java "Client" "172.17.0.2" "192.168.178.27" "$java_result_file"
+    done
+}
+
 # Prepare and execute tests
 
 if [ "$1" = "regular"  ] || [ "$1" = "" ] 
@@ -80,4 +97,9 @@ fi
 if [ "$1" = "container"  ] || [ "$1" = "" ] 
 then
     container
+fi
+
+if [ "$1" = "privileged"  ] || [ "$1" = "" ] 
+then
+    privileged
 fi

@@ -51,18 +51,6 @@ function run_manual(){
     sudo umount overlay
 }
 
-# Run tests in a container
-function run_container() {
-    volume="type=bind,source=$(pwd)/Results,target=/Results"
-    c_image="masterarbeit-filesystem-read-c"
-    java_image="masterarbeit-filesystem-read-java"
-    for i in {0..15}
-    do
-        docker run --name "$c_image" -it --rm --mount "$volume" "$c_image" ./read "dir/$i.txt" "Results/Filesystem_Read_C_Container_$i.txt"
-	    docker run --name "$java_image" -it --rm --mount "$volume" "$java_image" java Main "dir/$i.txt" "Results/Filesystem_Read_Java_Container_$i.txt"
-    done
-}
-
 # Prepare and run regular tests
 function regular() {
     echo "Executing tests in regular mode"
@@ -99,10 +87,38 @@ function container() {
 
     pushd ../.. > /dev/null
 
-    for i in {0..99}
+    for iteration in {0..99}
     do
-	    echo "$((i + 1)) von 100"
-        run_container 
+	    echo "$((iteration + 1)) von 100"
+        volume="type=bind,source=$(pwd)/Results,target=/Results"
+        c_image="masterarbeit-filesystem-read-c"
+        java_image="masterarbeit-filesystem-read-java"
+        for i in {0..15}
+        do
+            docker run --name "$c_image" -it --rm --mount "$volume" "$c_image" ./read "dir/$i.txt" "Results/Filesystem_Read_C_Container_$i.txt"
+    	    docker run --name "$java_image" -it --rm --mount "$volume" "$java_image" java Main "dir/$i.txt" "Results/Filesystem_Read_Java_Container_$i.txt"
+        done
+    done
+
+    popd > /dev/null
+}
+
+function privileged() {
+    echo "Executing tests in container mode"
+
+    pushd ../.. > /dev/null
+
+    for iteration in {0..99}
+    do
+	    echo "$((iteration + 1)) von 100"
+        volume="type=bind,source=$(pwd)/Results,target=/Results"
+        c_image="masterarbeit-filesystem-read-c"
+        java_image="masterarbeit-filesystem-read-java"
+        for i in {0..15}
+        do
+            docker run --name "$c_image" -it --rm --privileged --mount "$volume" "$c_image" ./read "dir/$i.txt" "Results/Filesystem_Read_C_Privileged_$i.txt"
+    	    docker run --name "$java_image" -it --rm --privileged --mount "$volume" "$java_image" java Main "dir/$i.txt" "Results/Filesystem_Read_Java_Privileged_$i.txt"
+        done
     done
 
     popd > /dev/null
@@ -123,4 +139,9 @@ fi
 if [ "$1" = "container"  ] || [ "$1" = "" ] 
 then 
     container
+fi
+
+if [ "$1" = "privileged"  ] || [ "$1" = "" ] 
+then 
+    privileged
 fi

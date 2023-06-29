@@ -29,20 +29,6 @@ function run_manual(){
     sudo umount overlay
 }
 
-# Run tests in a container
-function run_container() {
-    volume="type=bind,source=$(pwd)/Results,target=/Results"
-    c_image="masterarbeit-filesystem-open-c"
-    java_image="masterarbeit-filesystem-open-java"
-    for i in {0..15}
-    do
-        c_result_file="Results/Filesystem_Open_C_Container_$i.txt"
-        java_result_file="Results/Filesystem_Open_Java_Container_$i.txt"
-        docker run --name "$c_image" --rm --mount "$volume" "$c_image" ./open "dir/$i.txt" "$c_result_file"
-        docker run --name "$java_image" --rm --mount "$volume" "$java_image" java "Main" "dir/$i.txt" "$java_result_file"
-    done
-}
-
 # Prepare and run regular tests
 function regular() {
     echo "Executing tests in regular mode"
@@ -78,10 +64,42 @@ function container() {
 
     pushd ../.. > /dev/null
 
-    for i in {0..99}
+    for iteration in {0..99}
     do
-	echo "$((i + 1)) von 100"
-    	run_container
+	    echo "$((iteration + 1)) von 100"
+    	volume="type=bind,source=$(pwd)/Results,target=/Results"
+        c_image="masterarbeit-filesystem-open-c"
+        java_image="masterarbeit-filesystem-open-java"
+        for i in {0..15}
+        do
+            c_result_file="Results/Filesystem_Open_C_Container_$i.txt"
+            java_result_file="Results/Filesystem_Open_Java_Container_$i.txt"
+            docker run --name "$c_image" --rm --mount "$volume" "$c_image" ./open "dir/$i.txt" "$c_result_file"
+            docker run --name "$java_image" --rm --mount "$volume" "$java_image" java "Main" "dir/$i.txt" "$java_result_file"
+        done
+    done
+
+    popd > /dev/null
+}
+
+# Prepare and run container tests in privileged mode
+function privileged() {
+
+    pushd ../.. > /dev/null
+
+    for iteration in {0..99}
+    do
+	    echo "$((iteration + 1)) von 100"
+    	volume="type=bind,source=$(pwd)/Results,target=/Results"
+        c_image="masterarbeit-filesystem-open-c"
+        java_image="masterarbeit-filesystem-open-java"
+        for i in {0..15}
+        do
+            c_result_file="Results/Filesystem_Open_C_Privileged_$i.txt"
+            java_result_file="Results/Filesystem_Open_Java_Privileged_$i.txt"
+            docker run --name "$c_image" --rm --privileged --mount "$volume" "$c_image" ./open "dir/$i.txt" "$c_result_file"
+            docker run --name "$java_image" --rm --privileged --mount "$volume" "$java_image" java "Main" "dir/$i.txt" "$java_result_file"
+        done
     done
 
     popd > /dev/null
@@ -102,4 +120,9 @@ fi
 if [ "$1" = "container"  ] || [ "$1" = "" ] 
 then
     container
+fi
+
+if [ "$1" = "privileged"  ] || [ "$1" = "" ] 
+then
+    privileged
 fi

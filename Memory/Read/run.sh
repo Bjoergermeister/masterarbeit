@@ -54,6 +54,25 @@ function container() {
     done
 }
 
+# Prepare and run container tests in privileged mode
+function privileged() {
+    volume="type=bind,source=$(pwd)/../../Results,target=/Results"
+    c_image="masterarbeit-memory-read-c"
+    java_image="masterarbeit-memory-read-java"
+    c_result_file="Results/Memory_Read_C_Privileged"
+    java_result_file="Results/Memory_Read_Java_Privileged"
+
+    memory_limit=$((1024 * 1024 * 100));
+    swap_limit=-1 #Must be set so that the containers have enough swap memory to run. If unset, memory and swap usage would be limited to 100MB each
+
+    for i in {0..99}
+    do
+        echo "$((i + 1)) von 100"
+        docker run --name "$c_image" --rm --privileged --mount "$volume" --memory "$memory_limit" --memory-swap="$swap_limit" "$c_image" ./read "$c_result_file"
+        docker run --name "$java_image" --rm --privileged --mount "$volume" --memory "$memory_limit" --memory-swap="$swap_limit" "$java_image" java $jvm_args "Main" "$java_result_file"
+    done
+}
+
 # Prepare and execute tests
 
 if [ "$1" = "regular"  ] || [ "$1" = "" ] 
@@ -69,4 +88,9 @@ fi
 if [ "$1" = "container"  ] || [ "$1" = "" ] 
 then
     container
+fi
+
+if [ "$1" = "privileged"  ] || [ "$1" = "" ] 
+then
+    privileged
 fi

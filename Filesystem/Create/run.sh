@@ -77,6 +77,22 @@ function container() {
     done
 }
 
+# Prepare and run container tests in privileged mode
+function privileged() {
+    volume="type=bind,source=$(pwd)/../../Results,target=/Results"
+    c_image="masterarbeit-filesystem-create-c"
+    java_image="masterarbeit-filesystem-create-java"
+    c_output_file="Results/Filesystem_Create_C_Privileged.txt"
+    java_output_file="Results/Filesystem_Create_Java_Privileged.txt"
+
+    for i in {0..99}
+    do
+        echo "$i von 99"
+        docker run --name "$c_image" -it --rm --privileged --mount "$volume" "$c_image" ./create "new.txt" "$c_output_file" 
+        docker run --name "$java_image" -it --rm --privileged --mount "$volume" "$java_image" java Main "new.txt" "$java_output_file"                 
+    done
+}
+
 # Prepare and execute tests
 
 if [ "$1" = "regular"  ] || [ "$1" = "" ] 
@@ -92,4 +108,9 @@ fi
 if [ "$1" = "container"  ] || [ "$1" = "" ] 
 then 
     container
+fi
+
+if [ "$1" = "privileged"  ] || [ "$1" = "" ] 
+then
+    privileged
 fi

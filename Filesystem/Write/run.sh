@@ -123,6 +123,41 @@ function container() {
     popd > /dev/null
 }
 
+# Prepare and run container tests in privileged mode
+function privileged() {
+    echo "Executing tests in container mode"
+
+    pushd ../.. > /dev/null
+
+    volume="type=bind,source=$(pwd)/Results,target=/Results"
+    c_image="masterarbeit-filesystem-write-c"
+    java_image="masterarbeit-filesystem-write-java"
+    c_prefix="Results/Filesystem_Write_C_Privileged_"
+    java_prefix="Results/Filesystem_Write_Java_Privileged_"
+
+    for i in {0..99}
+    do
+	echo "$i von 99"
+        # C container
+        docker run --name "$c_image" -it --rm --privileged --mount "$volume" "$c_image" ./write "dir/1.txt" "${c_prefix}1.txt"
+        docker run --name "$c_image" -it --rm --privileged --mount "$volume" "$c_image" ./write "dir/128.txt" "${c_prefix}128.txt"
+        docker run --name "$c_image" -it --rm --privileged --mount "$volume" "$c_image" ./write "dir/256.txt" "${c_prefix}256.txt"
+        docker run --name "$c_image" -it --rm --privileged --mount "$volume" "$c_image" ./write "dir/512.txt" "${c_prefix}512.txt"
+        docker run --name "$c_image" -it --rm --privileged --mount "$volume" "$c_image" ./write "dir/1024.txt" "${c_prefix}1024.txt"
+        docker run --name "$c_image" -it --rm --privileged --mount "$volume" "$c_image" ./write "dir/2048.txt" "${c_prefix}2048.txt"
+
+        # Java container
+        docker run --name "$java_image" -it --rm --privileged --mount "$volume" "$java_image" java Main "dir/1.txt" "${java_prefix}1.txt"
+        docker run --name "$java_image" -it --rm --privileged --mount "$volume" "$java_image" java Main "dir/128.txt" "${java_prefix}128.txt"
+        docker run --name "$java_image" -it --rm --privileged --mount "$volume" "$java_image" java Main "dir/256.txt" "${java_prefix}256.txt"
+        docker run --name "$java_image" -it --rm --privileged --mount "$volume" "$java_image" java Main "dir/512.txt" "${java_prefix}512.txt"
+        docker run --name "$java_image" -it --rm --privileged --mount "$volume" "$java_image" java Main "dir/1024.txt" "${java_prefix}1024.txt"
+        docker run --name "$java_image" -it --rm --privileged --mount "$volume" "$java_image" java Main "dir/2048.txt" "${java_prefix}2048.txt"
+    done
+
+    popd > /dev/null
+}
+
 # Prepare and execute tests
 
 if [ "$1" = "regular"  ] || [ "$1" = "" ]
@@ -138,4 +173,9 @@ fi
 if [ "$1" = "container"  ] || [ "$1" = "" ]
 then
     container
+fi
+
+if [ "$1" = "privileged"  ] || [ "$1" = "" ]
+then
+    privileged
 fi
