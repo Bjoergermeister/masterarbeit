@@ -1,7 +1,6 @@
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 
 public class Main {
 
@@ -9,16 +8,17 @@ public class Main {
     private static final long THREE_HUNDRED_MEGABYTES = 1024 * 1024 * 300;
     private static final long NANOSECONDS_IN_ONE_MICROSECOND = 1000;
 
-    public static void main(String[] args) throws NoSuchFieldException, IllegalAccessException {
+    volatile static byte[] array;
+
+    public static void main(String[] args) {
         String filePrefix = args[0];
 
         long total_allocated_memory = 0;
         long allocationCounter = 0;
         float timeSum = 0;
-        ArrayList<byte[]> arrays = new ArrayList<byte[]>();
 
         while (total_allocated_memory < THREE_HUNDRED_MEGABYTES) {
-            byte[] array = new byte[PAGE_SIZE];
+            array = new byte[PAGE_SIZE];
 
             long start = System.nanoTime();
             for (int i = 0; i < 4096; i++) {
@@ -30,7 +30,6 @@ public class Main {
 
             total_allocated_memory += 4096;
             allocationCounter++;
-            arrays.add(array);
 
             if (allocationCounter % 600 == 0 && allocationCounter > 0) {
                 save(
