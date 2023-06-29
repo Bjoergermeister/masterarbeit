@@ -5,10 +5,7 @@ function run_regular() {
     result_dir="../../../../Results"
     for i in {0..99}
     do
-        # C version
         ../../C/read "dir/$1.txt" "${result_dir}/Filesystem_Read_C_Regular_$1.txt"
-
-        # Java version
         java -cp "../../Java" Main "dir/$1.txt" "${result_dir}/Filesystem_Read_Java_Regular_$1.txt"
     done
 }

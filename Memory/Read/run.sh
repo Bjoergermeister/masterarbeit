@@ -10,11 +10,7 @@ function regular() {
     for i in {0..99}
     do
 	    echo "$((i + 1)) von 100"
-
-        # C version
         C/read "${result_dir}/Memory_Read_C_Regular"
-
-        # Java version
         java -cp Java/ $jvm_args Main "${result_dir}/Memory_Read_Java_Regular"
     done
 }
@@ -32,11 +28,7 @@ function manual() {
     for i in {0..99}
     do
 	    echo "$((i + 1)) von 100"
-
-        # C version
         C/read "$result_dir/Memory_Read_C_Manual"
-
-        # Java version
         java -cp Java $jvm_args Main "$result_dir/Memory_Read_Java_Manual"
     done
 
@@ -48,6 +40,8 @@ function container() {
     volume="type=bind,source=$(pwd)/../../Results,target=/Results"
     c_image="masterarbeit-memory-read-c"
     java_image="masterarbeit-memory-read-java"
+    c_result_file="Results/Memory_Read_C_Container"
+    java_result_file="Results/Memory_Read_Java_Container"
 
     memory_limit=$((1024 * 1024 * 100));
     swap_limit=-1 #Must be set so that the containers have enough swap memory to run. If unset, memory and swap usage would be limited to 100MB each
@@ -55,9 +49,6 @@ function container() {
     for i in {0..99}
     do
         echo "$((i + 1)) von 100"
-
-        c_result_file="Results/Memory_Read_C_Container"
-        java_result_file="Results/Memory_Read_Java_Container"
         docker run --name "$c_image" --rm --mount "$volume" --memory "$memory_limit" --memory-swap="$swap_limit" "$c_image" ./read "$c_result_file"
         docker run --name "$java_image" --rm --mount "$volume" --memory "$memory_limit" --memory-swap="$swap_limit" "$java_image" java $jvm_args "Main" "$java_result_file"
     done

@@ -10,11 +10,7 @@ function regular() {
     for i in {0..99}
     do
 	    echo "$((i + 1)) von 100"
-
-        # C version
         C/allocation "${result_dir}/Memory_Allocation_C_Regular"
-
-        # Java version
         java -cp Java/ $jvm_args Main "${result_dir}/Memory_Allocation_Java_Regular"
     done
 }
@@ -32,15 +28,11 @@ function manual() {
     for i in {0..99}
     do
 	    echo "$((i + 1)) von 100"
-
-        # C version
         C/allocation "$result_dir/Memory_Allocation_C_Manual"
-
-        # Java version
         java -cp Java $jvm_args Main "$result_dir/Memory_Allocation_Java_Manual"
     done
 
-    mdir /sys/fs/cgroup/memory/user.slice/masterarbeit
+    rmdir /sys/fs/cgroup/memory/user.slice/masterarbeit
 }
 
 # Prepare and run container tests
@@ -48,6 +40,8 @@ function container() {
     volume="type=bind,source=$(pwd)/../../Results,target=/Results"
     c_image="masterarbeit-memory-allocation-c"
     java_image="masterarbeit-memory-allocation-java"
+    c_result_file="Results/Memory_Allocation_C_Container"
+    java_result_file="Results/Memory_Allocation_Java_Container"
 
     memory_limit=$((1024 * 1024 * 100));
     swap_limit=$((1024 * 1024 * 100 * 2));
@@ -55,9 +49,6 @@ function container() {
     for i in {0..99}
     do
         echo "$((i + 1)) von 100"
-
-        c_result_file="Results/Memory_Allocation_C_Container"
-        java_result_file="Results/Memory_Allocation_Java_Container"
         docker run --name "$c_image" --rm --mount "$volume" --memory "$memory_limit" --memory-swap "$swap_limit" "$c_image" ./allocation "$c_result_file"
         docker run --name "$java_image" --rm --mount "$volume" --memory "$memory_limit" --memory-swap "$swap_limit" "$java_image" java $jvm_args "Main" "$java_result_file"
     done

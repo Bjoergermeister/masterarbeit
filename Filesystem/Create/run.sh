@@ -8,9 +8,7 @@ function run_manual(){
     sudo mount -t overlay overlay -o lowerdir=lower,upperdir=upper,workdir=workdir merged
 
     cd merged
-    
     ../../../C/create "new.txt" "$result_dir/Filesystem_Create_C_Manual.txt"
-
     cd ..
 
     sudo umount overlay
@@ -20,9 +18,7 @@ function run_manual(){
     sudo mount -t overlay overlay -o lowerdir=lower,upperdir=upper,workdir=workdir merged
 
     cd merged
-    
     java -cp ../../../Java/ Main "new.txt" "$result_dir/Filesystem_Create_Java_Manual.txt"
-
     cd ..
 
     sudo umount overlay
@@ -40,11 +36,9 @@ function regular() {
     do
         echo "$i von 99"
 
-        # C version
         ../../C/create "new.txt" "${result_dir}/Filesystem_Create_C_Regular.txt"
         rm new.txt
     
-        # Java version
         java -cp ../../Java Main "new.txt" "${result_dir}/Filesystem_Create_Java_Regular.txt"
         rm new.txt
     done
@@ -69,10 +63,7 @@ function manual() {
 
 # Prepare and run container tests
 function container() {
-
-    pushd ../.. > /dev/null
-
-    volume="type=bind,source=$(pwd)/Results,target=/Results"
+    volume="type=bind,source=$(pwd)/../../Results,target=/Results"
     c_image="masterarbeit-filesystem-create-c"
     java_image="masterarbeit-filesystem-create-java"
     c_output_file="Results/Filesystem_Create_C_Container.txt"
@@ -84,8 +75,6 @@ function container() {
         docker run --name "$c_image" -it --rm --mount "$volume" "$c_image" ./create "new.txt" "$c_output_file" 
         docker run --name "$java_image" -it --rm --mount "$volume" "$java_image" java Main "new.txt" "$java_output_file"                 
     done
-
-    popd > /dev/null
 }
 
 # Prepare and execute tests

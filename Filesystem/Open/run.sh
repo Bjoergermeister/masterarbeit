@@ -6,10 +6,7 @@ function run_regular() {
     result_dir="../../../../Results"
     for i in {0..99}
     do
-        # C version
         ../../C/open "dir/$1.txt" "${result_dir}/Filesystem_Open_C_Regular_$1.txt"
-
-        # Java version
         java -cp ../../Java/ Main "dir/$1.txt" "${result_dir}/Filesystem_Open_Java_Regular_$1.txt"
     done
 }
@@ -17,24 +14,14 @@ function run_regular() {
 # Run tests with a regular process on a container filesystem
 function run_manual(){
     result_dir="../../../../../Results"
-
-    # Build lowerdir list
-    lowerdirs="Layer0"
-    for i in {1..15}
-    do
-        lowerdirs="$lowerdirs:Layer$i"
-    done
+    lowerdirs="Layer0:Layer1:Layer2:Layer3:Layer4:Layer5:Layer6:Layer7:Layer8:Layer9:Layer10:Layer11:Layer12:Layer13:Layer14:Layer015"
 
     sudo mount -t overlay overlay -o lowerdir=${lowerdirs},upperdir=upper,workdir=workdir merged
     cd merged
 
-
     for i in {0..15}
     do
-        # C version
         ../../../C/open "dir/$i.txt" "$result_dir/Filesystem_Open_C_Manual_$i.txt"
-
-        # Java version
         java -cp ../../../Java Main "dir/$i.txt" "$result_dir/Filesystem_Open_Java_Manual_$i.txt"
     done
 
