@@ -15,7 +15,7 @@
 #include "../../../common/C/benchmark.h"
 #include "../../../common/C/network.h"
 
-#define BYTES_IN_ONE_GIGABYTE (1024 * 1024 * 256)
+#define BYTES_IN_ONE_GIGABYTE (1024 * 1024 * 1024)
 #define MESSAGE_LENGTH 1460
 
 float process_response(char *response, float *throughput, int *packet_count)
@@ -26,9 +26,8 @@ float process_response(char *response, float *throughput, int *packet_count)
 
 int main(int argc, char **argv)
 {
-    char *source_ip_address = argv[1];
-    char *destination_ip_address = argv[2];
-    char *save_filename = argv[3];
+    char *destination_ip_address = argv[1];
+    char *save_filename = argv[2];
 
     struct timespec start;
     struct timespec end;
@@ -65,6 +64,8 @@ int main(int argc, char **argv)
         total_send_bytes += bytes_send;
         total_send_packets++;
     }
+
+    printf("Finished sending data, waiting for response\n");
 
     // Get response with throughput from server
     ssize_t received_bytes = recv(socket, message, MESSAGE_LENGTH, 0);

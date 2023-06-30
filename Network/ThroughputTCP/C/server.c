@@ -49,19 +49,14 @@ bool has_end_flag(char *message, ssize_t message_length)
 int main(int argc, char **argv)
 {
     char *server_ip_address = argv[1];
-    char *client_ip_address = argv[2];
-    char *save_filename = argv[3];
 
     struct timespec start;
     struct timespec end;
 
+    socklen_t address_length = sizeof(struct sockaddr);
+    struct sockaddr_in client_address;
     struct sockaddr_in server_address;
     configure_sockaddr(&server_address, server_ip_address, PORT);
-
-    struct sockaddr_in client_address;
-    configure_sockaddr(&client_address, client_ip_address, PORT);
-
-    socklen_t address_length = sizeof(struct sockaddr);
 
     int socket = open_socket(SOCK_STREAM, IPPROTO_TCP);
 
@@ -106,6 +101,8 @@ int main(int argc, char **argv)
             }
 
         } while (has_end_flag(client_message, received_bytes) == false);
+
+        printf("Found stop flag, preparing and sending response");
 
         clock_gettime(CLOCK_MONOTONIC, &end);
         long difference = calculate_time_difference(&start, &end);
