@@ -44,6 +44,8 @@ function manual() {
 
 # Prepare and run container tests
 function container() {
+    echo "Executing tests in container mode"
+
     volume="type=bind,source=$(pwd)/../../Results,target=/Results"
     c_image="masterarbeit-network-latency-c"
     java_image="masterarbeit-network-latency-java"
@@ -56,6 +58,8 @@ function container() {
 
 # Prepare and run container tests in privileged mode
 function privileged() {
+   echo "Executing tests in privileged mode"
+
     volume="type=bind,source=$(pwd)/../../Results,target=/Results"
     c_image="masterarbeit-network-latency-c"
     java_image="masterarbeit-network-latency-java"
