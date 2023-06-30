@@ -16,43 +16,20 @@
 #include "../../../common/C/benchmark.h"
 #include "../../../common/C/network.h"
 
-#define STOP_FLAG "\0\0\0\0\0\0\0\0"
-#define STOP_FLAG_LENGTH 8
-#define BYTES_IN_ONE_MEGABYTE (1024 * 1024)
 #define PORT 5000
-
-float calculate_throughput(long bytes, long time_difference)
-{
-    float time_in_seconds = (float)time_difference / NANOSECONDS_IN_ONE_SECOND;
-    float megabytes = (float)bytes / BYTES_IN_ONE_MEGABYTE;
-    printf("%f megabytes in %f seconds = %f mb/s\n", megabytes, time_in_seconds, megabytes / time_in_seconds);
-    return megabytes / time_in_seconds;
-}
-
-void write_response(char *buffer, long bytes, long time_difference)
-{
-    float throughput = calculate_throughput(bytes, time_difference);
-    long throughput_as_int = *(long *)&throughput;
-
-    sprintf(buffer, "%ld\n", throughput_as_int);
-}
 
 int main(int argc, char **argv)
 {
     char *server_ip_address = argv[1];
-    char *client_ip_address = argv[2];
-    char *save_filename = argv[3];
+    char *save_filename = argv[2];
 
     struct timespec start;
     struct timespec end;
 
+    socklen_t address_length = sizeof(struct sockaddr);
+    struct sockaddr_in client_address;
     struct sockaddr_in server_address;
     configure_sockaddr(&server_address, server_ip_address, PORT);
-
-    struct sockaddr_in client_address;
-    configure_sockaddr(&client_address, client_ip_address, PORT);
-
-    socklen_t address_length = sizeof(struct sockaddr);
 
     int socket = open_socket(SOCK_STREAM, IPPROTO_TCP);
 
@@ -72,5 +49,6 @@ int main(int argc, char **argv)
             perror("accept()");
             exit(-1);
         }
+	handle_error(close(accepted_socket), "close()");
     }
 }
