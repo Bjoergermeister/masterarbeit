@@ -65,7 +65,7 @@ function privileged() {
     java_image="masterarbeit-network-latency-java"
     c_result_file="Results/Network_Latency_C_Privileged.txt"
     java_result_file="Results/Network_Latency_Java_Privileged.txt"
-    
+
     docker run --name "$c_image" --rm --privileged --mount "$volume" --ip 172.17.0.2 -it "$c_image" ./latency "172.17.0.2" "192.168.178.1" "$c_result_file"
     docker run --name "$java_image" --rm --privileged --mount "$volume" "$java_image" java "Main" "172.17.0.2" "192.168.178.1" "$java_result_file"
 }

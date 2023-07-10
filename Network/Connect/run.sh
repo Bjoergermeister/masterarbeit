@@ -19,6 +19,9 @@ function manual() {
     echo "Executing tests in manual mode"
 
     # Setup host part of networking
+    sudo ip link add masterarbeit type bridge
+    sudo ip addr add 172.19.0.1/24 dev masterarbeit
+    sudo ip link set dev masterarbeit up
     sudo ip netns add container # Add network namespace
     sudo ip link add if-host type veth peer name if-container # Create VETH pair
     sudo ip link set dev if-host up # Up host interface
@@ -45,7 +48,7 @@ function manual() {
     # Remove container networking
     sudo ip netns delete container
     sudo ip link delete if-host
-
+    sudo ip link delete masterarbeit
 }
 
 # Prepare and run container tests

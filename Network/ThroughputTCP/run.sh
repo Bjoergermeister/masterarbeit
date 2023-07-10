@@ -6,7 +6,7 @@ function regular() {
 
     result_dir="../../Results"
 
-    for i in {0..25}
+    for i in {0..24}
     do
         echo "$((i + 1)) von 25"
         C/client $DESTINATION_IP "${result_dir}/Network_ThroughputTCP_C_Regular.txt"
@@ -19,6 +19,9 @@ function manual() {
     echo "Executing tests in manual mode"
 
     # Setup host part of networking
+    sudo ip link add masterarbeit type bridge
+    sudo ip addr add 172.19.0.1/16 dev masterarbeit
+    sudo ip link set dev masterarbeit up
     sudo ip netns add container # Add network namespace
     sudo ip link add if-host type veth peer name if-container # Create VETH pair
     sudo ip link set dev if-host up # Up host interface
@@ -34,25 +37,25 @@ function manual() {
 
     # Execute the ping programs
     result_dir="../../Results"
-    # C version
-    for i in {0..25}
+    for i in {0..24}
     do
         echo "$((i + 1)) von 25"
-        sudo ip netns exec container C/client $DESTINATION_IP "$result_dir/Network_Throughput_C_Manual.txt"
-        sudo ip netns exec container java -cp Java Client $DESTINATION_IP "$result_dir/Network_Throughput_Java_Manual.txt"
+        sudo ip netns exec container C/client $DESTINATION_IP "$result_dir/Network_ThroughputTCP_C_Manual.txt"
+        sudo ip netns exec container java -cp Java Client $DESTINATION_IP "$result_dir/NetworkTCP_Throughput_Java_Manual.txt"
     done
 
     # Remove container networking
     sudo ip netns delete container
     sudo ip link delete if-host
-
+    sudo ip link delete masterarbeit
 }
 
 # Prepare and run container tests
 function container() {
+    echo "Running tests in container mode"
     volume="type=bind,source=$(pwd)/../../Results,target=/Results"
-    c_image="masterarbeit-network-throughput-c"
-    java_image="masterarbeit-network-throughput-java"
+    c_image="masterarbeit-network-throughputtcp-c"
+    java_image="masterarbeit-network-throughputtcp-java"
 
     c_result_file="Results/Network_Throughput_C_Container.txt"
     java_result_file="Results/Network_Throughput_Java_Container.txt"
@@ -67,14 +70,16 @@ function container() {
 
 # Prepare and run container tests in privileged mode
 function privileged() {
+    echo "Running tests in privileged mode"
+
     volume="type=bind,source=$(pwd)/../../Results,target=/Results"
-    c_image="masterarbeit-network-throughput-c"
-    java_image="masterarbeit-network-throughput-java"
+    c_image="masterarbeit-network-throughputtcp-c"
+    java_image="masterarbeit-network-throughputtcp-java"
 
-    c_result_file="Results/Network_Throughput_C_Privileged.txt"
-    java_result_file="Results/Network_Throughput_Java_Privileged.txt"
+    c_result_file="Results/Network_ThroughputTCP_C_Privileged.txt"
+    java_result_file="Results/Network_ThroughputTCP_Java_Privileged.txt"
 
-    for i in {0..25}
+    for i in {0..24}
     do
         echo "$((i + 1)) von 25"
         docker run --name "$c_image" --rm -p 5000:5000 --privileged --mount "$volume" --ip 172.17.0.2 "$c_image" ./client "$DESTINATION_IP" "$c_result_file"
