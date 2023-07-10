@@ -4,7 +4,7 @@ from os import listdir
 benchmarks = {}
 
 TYPE_CONVERSIONS = {
-    "Filesystem": lambda value: int(value),
+    "Filesystem": lambda value: int(float(value)),
     "Memory": lambda value: float(value),
     "Network": lambda value: float(value)
 }

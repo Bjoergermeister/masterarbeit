@@ -4,8 +4,8 @@ from data_importer import import_data
 from data_importer import benchmarks
 
 HEADERS = {
-    "Other": ["level", "regular", "manual", "container"],
-    "Write": ["level", "regular", "regular2", "manual", "manual2", "container", "container2"],
+    "Other": ["level", "regular", "manual", "container", "privileged"],
+    "Write": ["level", "regular", "regular2", "manual", "manual2", "container", "container2", "privileged", "privileged2"],
 }
 
 CASES = {
@@ -26,7 +26,8 @@ def write_filesystem_create(writer, operation, language):
     regular_value = calculate_average(benchmarks["Filesystem"]["Create"][language]["Regular"])
     manual_value = calculate_average(benchmarks["Filesystem"]["Create"][language]["Manual"])
     container_value = calculate_average(benchmarks["Filesystem"]["Create"][language]["Container"])
-    writer.writerow([0, regular_value, manual_value, container_value])    
+    privileged_value = calculate_average(benchmarks["Filesystem"]["Create"][language]["Privileged"])
+    writer.writerow([0, regular_value, manual_value, container_value, privileged_value])    
 
 def write_filesystem_write(writer, operation, language):
     for size in ["1", "128", "256", "512", "1024", "2048"]:
@@ -36,7 +37,9 @@ def write_filesystem_write(writer, operation, language):
         manual_value2 = calculate_average(second(benchmarks["Filesystem"]["Write"][language]["Manual"][size]))
         container_value = calculate_average(first(benchmarks["Filesystem"]["Write"][language]["Container"][size]))
         container_value2 = calculate_average(second(benchmarks["Filesystem"]["Write"][language]["Container"][size]))
-        writer.writerow([size, regular_value, regular_value2, manual_value, manual_value2, container_value, container_value2])
+        privileged_value = calculate_average(first(benchmarks["Filesystem"]["Write"][language]["Container"][size]))
+        privileged_value2 = calculate_average(second(benchmarks["Filesystem"]["Write"][language]["Container"][size]))
+        writer.writerow([size, regular_value, regular_value2, manual_value, manual_value2, container_value, container_value2, privileged_value, privileged_value2])
 
 def write_filesystem_open_read_delete(writer, operation, language):
     cases = CASES["Delete"] if operation == "Delete" else CASES["Other"]
@@ -57,7 +60,8 @@ def write_row(writer, type, operation, language, index):
     regular_value = get_value(type, operation, language, "Regular", index)
     manual_value = get_value(type, operation, language, "Manual", index)
     container_value = get_value(type, operation, language, "Container", index)
-    writer.writerow([index, regular_value, manual_value, container_value]) 
+    privileged_value = get_value(type, operation, language, "Privileged", index)
+    writer.writerow([index, regular_value, manual_value, container_value, privileged_value]) 
 
 def get_value(type, operation, language, mode, index):
     if type == "Network":
@@ -92,5 +96,5 @@ if __name__ == "__main__":
         for operation in ["Allocation", "Write", "Read"]:
             write_csv(f"../../Memory_{operation}_{language}.csv", write_memory, operation, language)
 
-        for operation in ["Latency", "Throughput"]:
+        for operation in ["Latency", "ThroughputUDP", "ThroughputTCP", "Connect"]:
             write_csv(f"../../Network_{operation}_{language}.csv", write_network, operation, language)
