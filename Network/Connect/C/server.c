@@ -21,7 +21,6 @@
 int main(int argc, char **argv)
 {
     char *server_ip_address = argv[1];
-    char *save_filename = argv[2];
 
     struct timespec start;
     struct timespec end;
@@ -49,6 +48,6 @@ int main(int argc, char **argv)
             perror("accept()");
             exit(-1);
         }
-	handle_error(close(accepted_socket), "close()");
+        handle_error(close(accepted_socket), "close()");
     }
 }
