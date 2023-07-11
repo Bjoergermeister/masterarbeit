@@ -34,8 +34,8 @@ int main(int argc, char **argv)
 
     sync();
 
-    long difference_first_write = write_and_measure(fd) / MILLISECONDS_IN_ONE_SECOND;
-    long difference_second_write = write_and_measure(fd) / MILLISECONDS_IN_ONE_SECOND;
+    float difference_first_write = write_and_measure(fd) / (float)NANOSECONDS_IN_ONE_MICROSECOND;
+    float difference_second_write = write_and_measure(fd) / (float)NANOSECONDS_IN_ONE_MICROSECOND;
 
     handle_error(close(fd), file_to_read);
 

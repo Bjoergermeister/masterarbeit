@@ -14,7 +14,7 @@ function run_regular() {
 # Run tests with a regular process on a container filesystem
 function run_manual(){
     result_dir="../../../../../Results"
-    lowerdirs="Layer0:Layer1:Layer2:Layer3:Layer4:Layer5:Layer6:Layer7:Layer8:Layer9:Layer10:Layer11:Layer12:Layer13:Layer14:Layer015"
+    lowerdirs="Layer0:Layer1:Layer2:Layer3:Layer4:Layer5:Layer6:Layer7:Layer8:Layer9:Layer10:Layer11:Layer12:Layer13:Layer14:Layer15"
 
     sudo mount -t overlay overlay -o lowerdir=${lowerdirs},upperdir=upper,workdir=workdir merged
     cd merged

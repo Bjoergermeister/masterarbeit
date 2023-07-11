@@ -53,17 +53,14 @@ void write_response(char *buffer, long bytes, long time_difference)
 int main(int argc, char **argv)
 {
     char *server_ip_address = argv[1];
-    char *client_ip_address = argv[2];
-    char *save_filename = argv[3];
 
     struct timespec start;
     struct timespec end;
 
+    socklen_t length = sizeof(struct sockaddr);
+    struct sockaddr_in client_address;
     struct sockaddr_in server_address;
     configure_sockaddr(&server_address, server_ip_address, PORT);
-
-    struct sockaddr_in client_address;
-    configure_sockaddr(&client_address, client_ip_address, PORT);
 
     int socket = open_socket(SOCK_DGRAM, IPPROTO_UDP);
 
@@ -74,7 +71,6 @@ int main(int argc, char **argv)
     handle_error(bind(socket, server, sizeof(struct sockaddr)), "bind(): ");
 
     struct sockaddr *client = (struct sockaddr *)&client_address;
-    socklen_t length = sizeof(struct sockaddr);
 
     char client_message[1500];
 

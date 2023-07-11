@@ -15,7 +15,7 @@
 #include "../../../common/C/benchmark.h"
 #include "../../../common/C/network.h"
 
-#define BYTES_IN_ONE_GIGABYTE (1024 * 1024 * 256)
+#define BYTES_IN_ONE_GIGABYTE (1024 * 1024 * 1024)
 
 float process_response(char *response, float *throughput, int *packet_count)
 {
