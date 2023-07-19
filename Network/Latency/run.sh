@@ -51,8 +51,8 @@ function container() {
     java_image="masterarbeit-network-latency-java"
     c_result_file="Results/Network_Latency_C_Container.txt"
     java_result_file="Results/Network_Latency_Java_Container.txt"
-    
-    docker run --name "$c_image" --rm --mount "$volume" --ip 172.17.0.2 -it "$c_image" ./latency "172.17.0.2" "192.168.178.1" "$c_result_file"
+
+    docker run --name "$c_image" --rm --mount "$volume" "$c_image" ./latency "172.17.0.2" "192.168.178.1" "$c_result_file"
     docker run --name "$java_image" --rm --mount "$volume" "$java_image" java "Main" "172.17.0.2" "192.168.178.1" "$java_result_file"
 }
 

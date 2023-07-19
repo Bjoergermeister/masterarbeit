@@ -54,18 +54,18 @@ function manual() {
 # Prepare and run container tests
 function container() {
     echo "Running tests in container mode"
+
     volume="type=bind,source=$(pwd)/../../Results,target=/Results"
     c_image="masterarbeit-network-throughputudp-c"
     java_image="masterarbeit-network-throughputudp-java"
+    c_result_file="Results/Network_ThroughputUDP_C_Container.txt"
+    java_result_file="Results/Network_ThroughputUDP_Java_Container.txt"
 
-    c_result_file="Results/Network_Throughput_C_Container.txt"
-    java_result_file="Results/Network_Throughput_Java_Container.txt"
-
-    for i in {0..25}
+    for i in {0..24}
     do
         echo "$((i + 1)) von 25"
         docker run --name "$c_image" --rm -p 5000:5000 --mount "$volume" --ip 172.17.0.2 "$c_image" ./client "172.17.0.2" "$DESTINATION_IP" "$c_result_file"
-        docker run --name "$java_image" -p 3000:3000 --rm --mount "$volume" "$java_image" java "Client" "172.17.0.2" "$DESTINATION_IP" "$java_result_file"
+        docker run --name "$java_image" --rm -p 3000:3000 --mount "$volume" "$java_image" java "Client" "172.17.0.2" "$DESTINATION_IP" "$java_result_file"
     done
 }
 

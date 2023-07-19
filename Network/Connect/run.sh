@@ -53,23 +53,26 @@ function manual() {
 
 # Prepare and run container tests
 function container() {
+    echo "Executing test in container mode"
+    
     volume="type=bind,source=$(pwd)/../../Results,target=/Results"
     c_image="masterarbeit-network-connect-c"
     java_image="masterarbeit-network-connect-java"
-
     c_result_file="Results/Network_Connect_C_Container.txt"
     java_result_file="Results/Network_Connect_Java_Container.txt"
 
     for i in {0..24}
     do
         echo "$((i + 1)) von 25"
-        #docker run --name "$c_image" --rm -p 5000:5000 --mount "$volume" --ip 172.17.0.2 "$c_image" ./client "$DESTINATION_IP" "$c_result_file"
-        docker run --name "$java_image" -p 3000:3000 --rm --mount "$volume" "$java_image" java "Client" "$DESTINATION_IP" "$java_result_file"
+        docker run --name "$c_image" --rm -p 5000:5000 --mount "$volume" --ip 172.17.0.2 "$c_image" ./client "$DESTINATION_IP" "$c_result_file"
+        docker run --name "$java_image" --rm -p 3000:3000 --mount "$volume" "$java_image" java "Client" "$DESTINATION_IP" "$java_result_file"
     done
 }
 
 # Prepare and run container tests in privileged mode
 function privileged() {
+    echo "Running tests in privileged mode"
+
     volume="type=bind,source=$(pwd)/../../Results,target=/Results"
     c_image="masterarbeit-network-connect-c"
     java_image="masterarbeit-network-connect-java"
