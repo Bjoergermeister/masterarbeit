@@ -30,12 +30,15 @@ public class Server {
 
         while (true) {
             long totalReceivedBytes = 0;
+            long receiveCount = 0;
             long startTime = 0;
             long endTime = 0;
             boolean isFirstPacket = true;
 
             do {
                 tryReceivePacket(socket, packet);
+
+                receiveCount++;
 
                 if (isFirstPacket) {
                     isFirstPacket = false;
@@ -56,7 +59,7 @@ public class Server {
             System.out.printf("Received %d bytes, throughput: %f\n", totalReceivedBytes, throughput);
 
             // Send result back to client
-            byte[] response = Float.toString(throughput).getBytes();
+            byte[] response = String.format("%f#%d", throughput, receiveCount).getBytes();
             DatagramPacket responsePacket = new DatagramPacket(response, response.length, destination, PORT);
             trySendPacket(socket, responsePacket);
         }

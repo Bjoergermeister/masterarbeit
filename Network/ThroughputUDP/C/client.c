@@ -76,8 +76,9 @@ int main(int argc, char **argv)
     }
 
     float throughput = 0;
-    int packet_count = 0;
-    float result = process_response(response, &throughput, &packet_count);
-    printf("%f, %d, %d (%d)\n", throughput, packet_count, send_count, send_count - packet_count);
-    save_benchmark_result_float(result, save_filename);
+    int received_count = 0;
+    float result = process_response(response, &throughput, &received_count);
+    float packet_success_percentage = (100.0f / send_count) * received_count;
+
+    save_benchmark_result_multiple(result, received_count, save_filename);
 }

@@ -40,15 +40,10 @@ void write_response(char *buffer, long bytes, int packets, long time_difference)
     *packets_address = packets;
 }
 
-/*
-void write_response(char *buffer, long bytes, long time_difference)
+inline bool is_stop_flag(char *client_message)
 {
-    float throughput = calculate_throughput(bytes, time_difference);
-    long throughput_as_int = *(long *)&throughput;
-
-    sprintf(buffer, "%ld\n", throughput_as_int);
+    return (strncmp(STOP_FLAG, client_message, STOP_FLAG_LENGTH) != 0);
 }
-*/
 
 int main(int argc, char **argv)
 {
@@ -80,7 +75,7 @@ int main(int argc, char **argv)
         int receive_count = 0;
         bool is_first_packet = true;
 
-        while (true)
+        do
         {
             int bytes_received = recvfrom(socket, client_message, 1500, 0, client, &length);
             if (bytes_received < 0)
@@ -97,10 +92,7 @@ int main(int argc, char **argv)
 
             receive_count++;
             total_bytes_received += bytes_received;
-
-            if (strncmp(STOP_FLAG, client_message, STOP_FLAG_LENGTH) == 0)
-                break;
-        }
+        } while (is_stop_flag(client_message) == false);
 
         clock_gettime(CLOCK_MONOTONIC, &end);
 

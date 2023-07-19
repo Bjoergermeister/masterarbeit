@@ -28,14 +28,9 @@ public class Client {
             System.exit(-1);
         }
 
-        DatagramSocket socket = null;
-        try {
-            socket = new DatagramSocket(PORT, source);
-        } catch (SocketException e) {
-            System.out.println(e.getMessage());
-            System.exit(-1);
-        }
+        DatagramSocket socket = tryOpenSocket(source);
 
+        long sendCount = 0;
         long totalBytesSend = 0;
         DatagramPacket packet = new DatagramPacket(buffer, buffer.length, destination, PORT);
         while (totalBytesSend < BYTES_IN_ONE_GIGABYTE) {
@@ -48,15 +43,32 @@ public class Client {
             trySendMessage(socket, packet);
 
             totalBytesSend += buffer.length;
-
+            sendCount++;
         }
 
         byte[] response = new byte[50];
         DatagramPacket responsePacket = new DatagramPacket(response, response.length, destination, PORT);
         tryReceiveMessage(socket, responsePacket);
-        float throughput = Float.parseFloat(new String(responsePacket.getData()));
 
-        save(args[2], throughput);
+        String responseString = new String(responsePacket.getData());
+        int dividerIndex = responseString.indexOf('#');
+        float throughput = Float.parseFloat(responseString.substring(0, dividerIndex));
+        long receiveCount = Long.parseLong(responseString.substring(dividerIndex + 2, responseString.length()));
+        float receive_success_percentage = (100.0f / sendCount) * receiveCount;
+
+        save(args[2], throughput, receive_success_percentage);
+    }
+
+    static DatagramSocket tryOpenSocket(InetAddress source) {
+        DatagramSocket socket = null;
+        try {
+            socket = new DatagramSocket(PORT, source);
+        } catch (SocketException e) {
+            System.out.println(e.getMessage());
+            System.exit(-1);
+        }
+
+        return socket;
     }
 
     static void tryReceiveMessage(DatagramSocket socket, DatagramPacket packet) {
@@ -77,12 +89,13 @@ public class Client {
         }
     }
 
-    static void save(String fileName, float result) {
+    static void save(String fileName, float throughput, float success_percentage) {
         try {
             FileWriter fileWriter = new FileWriter(fileName, true);
             BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
 
-            bufferedWriter.append(Float.toString(result) + "\n");
+            String result = String.format("%f, %f\n", throughput, success_percentage);
+            bufferedWriter.append(result);
             bufferedWriter.close();
         } catch (IOException ex) {
             System.out.println(ex.getMessage());
