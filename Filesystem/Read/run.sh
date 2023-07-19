@@ -6,7 +6,7 @@ function run_regular() {
     for i in {0..99}
     do
         ../../C/read "dir/$1.txt" "${result_dir}/Filesystem_Read_C_Regular_$1.txt"
-        java -cp "../../Java" Main "dir/$1.txt" "${result_dir}/Filesystem_Read_Java_Regular_$1.txt"
+        #java -cp "../../Java" Main "dir/$1.txt" "${result_dir}/Filesystem_Read_Java_Regular_$1.txt"
     done
 }
 
@@ -37,18 +37,18 @@ function run_manual(){
     sudo umount overlay
 
     # Java version
-    sudo mount -t overlay overlay -o lowerdir=${lowerdirs},upperdir=upper,workdir=workdir merged
-    cd merged
+    #sudo mount -t overlay overlay -o lowerdir=${lowerdirs},upperdir=upper,workdir=workdir merged
+    #cd merged
 
 
-    for i in {0..15}
-    do
-        java -cp "../../../Java" Main "dir/$i.txt" "$result_dir/Filesystem_Read_Java_Manual_$i.txt"
-    done
+    #for i in {0..15}
+    #do
+    #    java -cp "../../../Java" Main "dir/$i.txt" "$result_dir/Filesystem_Read_Java_Manual_$i.txt"
+    #done
 
-    cd ..
+    #cd ..
 
-    sudo umount overlay
+    #sudo umount overlay
 }
 
 # Prepare and run regular tests
@@ -59,9 +59,9 @@ function regular() {
 
     for i in {0..15}
     do
-	    echo "$((i + 1)) von 16"
+	echo "$((i + 1)) von 16"
         run_regular "$i"
-    done 
+    done
 
     popd > /dev/null
 }
@@ -89,14 +89,14 @@ function container() {
 
     for iteration in {0..99}
     do
-	    echo "$((iteration + 1)) von 100"
+	echo "$((iteration + 1)) von 100"
         volume="type=bind,source=$(pwd)/Results,target=/Results"
         c_image="masterarbeit-filesystem-read-c"
         java_image="masterarbeit-filesystem-read-java"
         for i in {0..15}
         do
             docker run --name "$c_image" -it --rm --mount "$volume" "$c_image" ./read "dir/$i.txt" "Results/Filesystem_Read_C_Container_$i.txt"
-    	    docker run --name "$java_image" -it --rm --mount "$volume" "$java_image" java Main "dir/$i.txt" "Results/Filesystem_Read_Java_Container_$i.txt"
+    	    #docker run --name "$java_image" -it --rm --mount "$volume" "$java_image" java Main "dir/$i.txt" "Results/Filesystem_Read_Java_Container_$i.txt"
         done
     done
 
@@ -110,14 +110,14 @@ function privileged() {
 
     for iteration in {0..99}
     do
-	    echo "$((iteration + 1)) von 100"
+	echo "$((iteration + 1)) von 100"
         volume="type=bind,source=$(pwd)/Results,target=/Results"
         c_image="masterarbeit-filesystem-read-c"
         java_image="masterarbeit-filesystem-read-java"
         for i in {0..15}
         do
             docker run --name "$c_image" -it --rm --privileged --mount "$volume" "$c_image" ./read "dir/$i.txt" "Results/Filesystem_Read_C_Privileged_$i.txt"
-    	    docker run --name "$java_image" -it --rm --privileged --mount "$volume" "$java_image" java Main "dir/$i.txt" "Results/Filesystem_Read_Java_Privileged_$i.txt"
+    	    #docker run --name "$java_image" -it --rm --privileged --mount "$volume" "$java_image" java Main "dir/$i.txt" "Results/Filesystem_Read_Java_Privileged_$i.txt"
         done
     done
 
@@ -127,21 +127,21 @@ function privileged() {
 # Prepare and execute tests
 
 if [ "$1" = "regular"  ] || [ "$1" = "" ] 
-then 
+then
     regular
 fi
 
 if [ "$1" = "manual"  ] || [ "$1" = "" ] 
-then 
+then
     manual
 fi
 
 if [ "$1" = "container"  ] || [ "$1" = "" ] 
-then 
+then
     container
 fi
 
 if [ "$1" = "privileged"  ] || [ "$1" = "" ] 
-then 
+then
     privileged
 fi

@@ -21,6 +21,7 @@ int main(int argc, char **argv)
     handle_error(fd, file_to_read);
 
     int file_size = lseek(fd, 0, SEEK_END);
+    lseek(fd, 0, SEEK_SET);
 
     char *read_buffer = malloc(sizeof(char) * file_size);
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &start);
@@ -30,6 +31,7 @@ int main(int argc, char **argv)
     handle_error(close(fd), file_to_read);
 
     long difference = calculate_time_difference(&start, &end);
+    float difference_in_microseconds = difference / (float)NANOSECONDS_IN_ONE_MICROSECOND;
 
-    save_benchmark_result(difference, file_to_save);
+    save_benchmark_result_float(difference_in_microseconds, file_to_save);
 }
