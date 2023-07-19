@@ -18,7 +18,6 @@ int main(int argc, char **argv)
     struct timespec start;
     struct timespec end;
 
-    void *current_break = sbrk(0);
     void *page;
     long total_allocated_memory = 0;
     long page_size = sysconf(_SC_PAGE_SIZE);

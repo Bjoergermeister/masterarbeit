@@ -10,15 +10,17 @@ public class Main {
     private static final long NANOSECONDS_IN_ONE_MICROSECOND = 1000;
     private static final ArrayList<byte[]> ARRAYS = new ArrayList<byte[]>();
 
+    volatile static int sum = 0;
+
     public static void main(String[] args) throws NoSuchFieldException, IllegalAccessException {
         String filePrefix = args[0];
 
         float timeSum = 0;
 
-        allocate_and_fill();
+        allocateAndFill();
 
         for (int i = ARRAYS.size() - 1; i >= 0; i--) {
-            int sum = 0;
+            sum = 0;
             long start = System.nanoTime();
             byte[] array = ARRAYS.get(i);
             for (int j = 0; j < PAGE_SIZE; j++) {
@@ -39,7 +41,7 @@ public class Main {
         }
     }
 
-    static void allocate_and_fill() {
+    static void allocateAndFill() {
         long total_allocated_memory = 0;
         while (total_allocated_memory < THREE_HUNDRED_MEGABYTES) {
             byte[] array = new byte[PAGE_SIZE];

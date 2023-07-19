@@ -36,9 +36,11 @@ int main(int argc, char **argv)
     void *pages[76800];
     allocate_and_fill(pages, page_size);
 
+    volatile int sum;
+
     for (int i = MAX_ALLOCATED_MEMORY / page_size; i >= 0; i--)
     {
-        int sum = 0;
+        sum = 0;
         char *page = (char *)pages[i];
 
         clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &start);
