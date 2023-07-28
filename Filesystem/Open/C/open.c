@@ -35,8 +35,7 @@ int main(int argc, char **argv)
     handle_error(success, filename_to_open);
 
     long difference = calculate_time_difference(&start, &end);
-    printf("%ld\n", difference);
-    long difference_in_milliseconds = difference / MILLISECONDS_IN_ONE_SECOND;
+    float difference_in_microseconds = difference / (float)NANOSECONDS_IN_ONE_MICROSECOND;
 
-    save_benchmark_result(difference_in_milliseconds, filename_to_save);
+    save_benchmark_result_float(difference_in_microseconds, filename_to_save);
 }
