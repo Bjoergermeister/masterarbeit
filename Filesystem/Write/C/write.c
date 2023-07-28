@@ -3,23 +3,28 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "../../../common/C/timing.h"
 #include "../../../common/C/benchmark.h"
 
-#define BLOCK_SIZE 512
+#define BLOCK_SIZE 4096
 
 long write_and_measure(int fd)
 {
     struct timespec start;
     struct timespec end;
 
-    lseek(fd, 0, SEEK_END);
+    lseek(fd, 0, SEEK_SET);
 
-    char buffer[1] = "a";
+    char *buffer = (char *)malloc(BLOCK_SIZE);
+    memset(buffer, 'A', BLOCK_SIZE);
+
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &start);
     write(fd, buffer, 1);
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end);
+
+    free(buffer);
 
     return calculate_time_difference(&start, &end);
 }

@@ -1,6 +1,7 @@
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 
 public class Main {
 
@@ -12,11 +13,17 @@ public class Main {
 
         String writeFile = args[0];
         String saveFile = args[1];
-        try {
-            FileWriter writer = new FileWriter(writeFile, true);
 
-            long result1 = writeAndMeasure(writer);
-            long result2 = writeAndMeasure(writer);
+        byte[] buffer = new byte[4096];
+        for (int i = 0; i < 4096; i++) {
+            buffer[i] = 'A';
+        }
+
+        try {
+            RandomAccessFile file = new RandomAccessFile(writeFile, "rw");
+
+            long result1 = writeAndMeasure(file, buffer);
+            long result2 = writeAndMeasure(file, buffer);
 
             save(saveFile, result1, result2);
         } catch (IOException ex) {
@@ -24,10 +31,11 @@ public class Main {
         }
     }
 
-    static long writeAndMeasure(FileWriter writer) {
+    static long writeAndMeasure(RandomAccessFile file, byte[] buffer) {
         try {
+            file.seek(0);
             long start = System.nanoTime();
-            writer.append('a');
+            file.write(buffer);
             long end = System.nanoTime();
             return (end - start) / 1000; // Convert to microseconds
         } catch (IOException ex) {
