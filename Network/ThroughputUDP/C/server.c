@@ -16,7 +16,7 @@
 #include "../../../common/C/benchmark.h"
 #include "../../../common/C/network.h"
 
-#define STOP_FLAG "\0\0\0\0\0\0\0\0"
+#define STOP_FLAG "00000000"
 #define STOP_FLAG_LENGTH 8
 #define BYTES_IN_ONE_MEGABYTE (1024 * 1024)
 #define PORT 5000
@@ -40,9 +40,9 @@ void write_response(char *buffer, long bytes, int packets, long time_difference)
     *packets_address = packets;
 }
 
-inline bool is_stop_flag(char *client_message)
+bool is_stop_flag(char *client_message)
 {
-    return (strncmp(STOP_FLAG, client_message, STOP_FLAG_LENGTH) != 0);
+    return (strncmp(STOP_FLAG, client_message, STOP_FLAG_LENGTH) == 0);
 }
 
 int main(int argc, char **argv)
@@ -100,7 +100,7 @@ int main(int argc, char **argv)
 
         if (receive_count != 735440)
         {
-            printf("Missing packets!\n");
+            printf("Missing packets! (Received: %d, missing: %d)\n", receive_count, 735440 - receive_count);
         }
         // Send response with time to client
         size_t buffer_size = 100;

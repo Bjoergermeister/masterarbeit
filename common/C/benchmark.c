@@ -23,11 +23,11 @@ FILE *open_file(char *filename)
     return fd;
 }
 
-void save_benchmark_result_multiple(long time1, long time2, char *filename)
+void save_benchmark_result_multiple(float time1, float time2, char *filename)
 {
     FILE *fd = open_file(filename);
 
-    int result = fprintf(fd, "%ld, %ld\n", time1, time2);
+    int result = fprintf(fd, "%f, %f\n", time1, time2);
     handle_error(result, filename);
 
     int success = fclose(fd);
@@ -69,7 +69,7 @@ void save_benchmark_result_partial(float time, int count, char *prefix)
 
 void handle_error(int return_value, char *filename)
 {
-    if (return_value == 0)
+    if (return_value >= 0)
         return;
 
     char *message = "Ein Fehler ist aufgetreten: ";

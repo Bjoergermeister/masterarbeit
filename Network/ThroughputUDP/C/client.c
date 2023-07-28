@@ -17,7 +17,7 @@
 
 #define BYTES_IN_ONE_GIGABYTE (1024 * 1024 * 1024)
 
-float process_response(char *response, float *throughput, int *packet_count)
+void process_response(char *response, float *throughput, int *packet_count)
 {
     *throughput = *(float *)response;
     *packet_count = *(int *)(response + sizeof(int) + 1);
@@ -25,9 +25,8 @@ float process_response(char *response, float *throughput, int *packet_count)
 
 int main(int argc, char **argv)
 {
-    char *source_ip_address = argv[1];
-    char *destination_ip_address = argv[2];
-    char *save_filename = argv[3];
+    char *destination_ip_address = argv[1];
+    char *save_filename = argv[2];
 
     struct timespec start;
     struct timespec end;
@@ -77,8 +76,8 @@ int main(int argc, char **argv)
 
     float throughput = 0;
     int received_count = 0;
-    float result = process_response(response, &throughput, &received_count);
+    process_response(response, &throughput, &received_count);
     float packet_success_percentage = (100.0f / send_count) * received_count;
 
-    save_benchmark_result_multiple(result, received_count, save_filename);
+    save_benchmark_result_multiple(throughput, packet_success_percentage, save_filename);
 }

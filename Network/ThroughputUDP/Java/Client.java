@@ -32,14 +32,24 @@ public class Client {
 
         long sendCount = 0;
         long totalBytesSend = 0;
-        DatagramPacket packet = new DatagramPacket(buffer, buffer.length, destination, PORT);
+        // DatagramPacket packet = new DatagramPacket(buffer, buffer.length,
+        // destination, PORT);
         while (totalBytesSend < BYTES_IN_ONE_GIGABYTE) {
+            if (buffer[0] == 'Z') {
+                buffer[0] = 'A';
+            } else {
+                buffer[0]++;
+            }
+
             if (BYTES_IN_ONE_GIGABYTE - totalBytesSend < buffer.length) {
                 for (int j = 0; j < 8; j++) {
-                    buffer[j] = '\0';
+                    buffer[j] = '0';
                 }
             }
 
+            System.out.printf("%c, ", buffer[0]);
+
+            DatagramPacket packet = new DatagramPacket(buffer, buffer.length, destination, PORT);
             trySendMessage(socket, packet);
 
             totalBytesSend += buffer.length;
@@ -52,8 +62,10 @@ public class Client {
 
         String responseString = new String(responsePacket.getData());
         int dividerIndex = responseString.indexOf('#');
+        System.out.println(responseString.substring(0, dividerIndex));
+        System.out.println(responseString.substring(dividerIndex, responseString.length() - 1));
         float throughput = Float.parseFloat(responseString.substring(0, dividerIndex));
-        long receiveCount = Long.parseLong(responseString.substring(dividerIndex + 2, responseString.length()));
+        long receiveCount = Long.parseLong(responseString.substring(dividerIndex + 2, responseString.length() - 1));
         float receive_success_percentage = (100.0f / sendCount) * receiveCount;
 
         save(args[2], throughput, receive_success_percentage);

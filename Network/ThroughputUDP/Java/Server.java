@@ -37,8 +37,8 @@ public class Server {
 
             do {
                 tryReceivePacket(socket, packet);
-
                 receiveCount++;
+                System.out.printf("%d, ", receiveCount);
 
                 if (isFirstPacket) {
                     isFirstPacket = false;
@@ -95,8 +95,10 @@ public class Server {
     }
 
     static boolean isStopFlag(byte[] message) {
+        // String messageAsString = new String(message);
+        // System.out.printf("%c, ", messageAsString.charAt(0));
         for (int i = 0; i < 8; i++) {
-            if (message[i] != '\0')
+            if (message[i] != '0')
                 return false;
         }
 
