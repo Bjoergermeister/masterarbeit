@@ -31,9 +31,9 @@ int main(int argc, char **argv)
 
     int socket = open_socket(SOCK_STREAM, IPPROTO_TCP);
 
-    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &start);
+    clock_gettime(CLOCK_MONOTONIC, &start);
     handle_error(connect(socket, destination, destination_length), "connect()");
-    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end);
+    clock_gettime(CLOCK_MONOTONIC, &end);
 
     handle_error(close(socket), "close()");
 
