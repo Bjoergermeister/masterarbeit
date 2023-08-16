@@ -10,7 +10,6 @@ import java.net.UnknownHostException;
 public class Server {
 
     public static final int PORT = 3000;
-    public static final String STOP_FLAG = "\0\0\0\0\0\0\0\0";
 
     public static void main(String[] args) {
         byte[] buffer = new byte[1460];
@@ -38,7 +37,6 @@ public class Server {
             do {
                 tryReceivePacket(socket, packet);
                 receiveCount++;
-                System.out.printf("%d, ", receiveCount);
 
                 if (isFirstPacket) {
                     isFirstPacket = false;
@@ -47,12 +45,17 @@ public class Server {
 
                 int length = packet.getLength();
                 totalReceivedBytes += length;
-            } while (isStopFlag(packet.getData()) == false);
+            } while (packet.getData()[0] == 'A');
 
             endTime = System.nanoTime();
 
+            String data = new String(packet.getData());
+            int iteration = Integer.parseInt(data.substring(0, data.indexOf('A')));
+
+            float timeToSubtract = (iteration - 1) * 5000000000.0f;
+
             // Calculate throughput
-            float timeDifferenceInSeconds = (endTime - startTime) / 1000000000.0f;
+            float timeDifferenceInSeconds = (endTime - startTime - timeToSubtract) / 1000000000.0f;
             float receivedMegabytes = totalReceivedBytes / (float) (1024 * 1024);
             float throughput = receivedMegabytes / (float) timeDifferenceInSeconds;
 

@@ -5,6 +5,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 
 public class Client {
@@ -32,24 +33,8 @@ public class Client {
 
         long sendCount = 0;
         long totalBytesSend = 0;
-        // DatagramPacket packet = new DatagramPacket(buffer, buffer.length,
-        // destination, PORT);
-        while (totalBytesSend < BYTES_IN_ONE_GIGABYTE) {
-            if (buffer[0] == 'Z') {
-                buffer[0] = 'A';
-            } else {
-                buffer[0]++;
-            }
-
-            if (BYTES_IN_ONE_GIGABYTE - totalBytesSend < buffer.length) {
-                for (int j = 0; j < 8; j++) {
-                    buffer[j] = '0';
-                }
-            }
-
-            System.out.printf("%c, ", buffer[0]);
-
-            DatagramPacket packet = new DatagramPacket(buffer, buffer.length, destination, PORT);
+        DatagramPacket packet = new DatagramPacket(buffer, buffer.length, destination, PORT);
+        while (totalBytesSend < BYTES_IN_ONE_GIGABYTE - buffer.length) {
             trySendMessage(socket, packet);
 
             totalBytesSend += buffer.length;
@@ -58,17 +43,36 @@ public class Client {
 
         byte[] response = new byte[50];
         DatagramPacket responsePacket = new DatagramPacket(response, response.length, destination, PORT);
-        tryReceiveMessage(socket, responsePacket);
+
+        int iteration = 1;
+        boolean success = false;
+        while (!success) {
+            buffer[0] = (byte) (iteration + '0');
+            trySendMessage(socket, packet);
+
+            trySetTimeout(socket, 5000);
+            success = tryReceiveMessage(socket, responsePacket);
+
+            iteration++;
+        }
 
         String responseString = new String(responsePacket.getData());
         int dividerIndex = responseString.indexOf('#');
-        System.out.println(responseString.substring(0, dividerIndex));
-        System.out.println(responseString.substring(dividerIndex, responseString.length() - 1));
+
         float throughput = Float.parseFloat(responseString.substring(0, dividerIndex));
-        long receiveCount = Long.parseLong(responseString.substring(dividerIndex + 2, responseString.length() - 1));
+        long receiveCount = Long.parseLong(responseString.substring(dividerIndex + 1, responsePacket.getLength()));
         float receive_success_percentage = (100.0f / sendCount) * receiveCount;
 
         save(args[2], throughput, receive_success_percentage);
+    }
+
+    static void trySetTimeout(DatagramSocket socket, int timeout) {
+        try {
+            socket.setSoTimeout(timeout);
+        } catch (SocketException e) {
+            System.out.println(e.getMessage());
+            System.exit(-1);
+        }
     }
 
     static DatagramSocket tryOpenSocket(InetAddress source) {
@@ -83,13 +87,17 @@ public class Client {
         return socket;
     }
 
-    static void tryReceiveMessage(DatagramSocket socket, DatagramPacket packet) {
+    static boolean tryReceiveMessage(DatagramSocket socket, DatagramPacket packet) {
         try {
             socket.receive(packet);
+        } catch (SocketTimeoutException timeoutExeption) {
+            return false;
         } catch (IOException e) {
             System.out.println(e.getMessage());
             System.exit(-1);
         }
+
+        return true;
     }
 
     static void trySendMessage(DatagramSocket socket, DatagramPacket packet) {

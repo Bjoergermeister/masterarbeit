@@ -92,11 +92,15 @@ int main(int argc, char **argv)
 
             receive_count++;
             total_bytes_received += bytes_received;
-        } while (is_stop_flag(client_message) == false);
+        } while (client_message[0] == 'A');
 
         clock_gettime(CLOCK_MONOTONIC, &end);
 
         long difference = calculate_time_difference(&start, &end);
+        long nanoseconds_in_one_second = 5000000000;
+        int iteration_count = *(int *)client_message;
+        if (iteration_count > 1)
+            difference -= nanoseconds_in_one_second * (iteration_count - 1);
 
         if (receive_count != 735440)
         {
