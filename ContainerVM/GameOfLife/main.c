@@ -4,6 +4,9 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "../../common/C/timing.h"
+#include "../../common/C/benchmark.h"
+
 #define GRID_SIZE 1000
 #define MAX_ITERATIONS 100
 
@@ -76,7 +79,8 @@ void randomize_field(bool* field){
     }
 }
 
-int main(){
+int main(int argc, char **argv)
+{
     size_t field_size = sizeof(bool) * GRID_SIZE * GRID_SIZE;
     bool* field = (bool*)malloc(field_size);
     bool* field_copy = (bool*)malloc(field_size);
@@ -86,7 +90,10 @@ int main(){
 
     randomize_field(field);
 
-    bool* dummy;
+    struct timespec start;
+    struct timespec end;
+    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &start);
+
     int iteration = 0;
     while(iteration < MAX_ITERATIONS){
         printf("%d\n", iteration);
@@ -102,6 +109,10 @@ int main(){
 
         iteration++;
     }
+    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end);
+
+    long difference = calculate_time_difference(&start, &end) / NANOSECONDS_IN_ONE_MICROSECOND;
+    save_benchmark_result(difference, argv[1]);
 
     return 0;
 }
