@@ -52,8 +52,8 @@ def process_file(path, type, operation, language, mode, case):
     file = open(path, "r")
     list = get_target_list(type, operation, language, mode, case)
     for line in file.readlines():
-        if operation == "Write" and type == "Filesystem":
-            measurements = [TYPE_CONVERSIONS[type](x) for x in line.split(", ")]
+        if (operation == "Write" and type == "Filesystem") or (operation == "ThroughputUDP" and type == "Network"):
+            measurements = [TYPE_CONVERSIONS[type](x) for x in map(lambda string: string.replace(",", "."), line.split(", "))]
             list.append((measurements[0], measurements[1]))
         else:
             list.append(TYPE_CONVERSIONS[type](line))

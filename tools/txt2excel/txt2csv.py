@@ -4,8 +4,8 @@ from data_importer import import_data
 from data_importer import benchmarks
 
 HEADERS = {
-    "Other": ["level", "regular", "manual", "container", "privileged"],
-    "Write": ["level", "regular", "regular2", "manual", "manual2", "container", "container2", "privileged", "privileged2"],
+    "Single": ["level", "regular", "manual", "container", "privileged"],
+    "Double": ["level", "regular", "regular2", "manual", "manual2", "container", "container2", "privileged", "privileged2"],
 }
 
 CASES = {
@@ -27,10 +27,11 @@ def write_filesystem_create(writer, operation, language):
     manual_value = calculate_average(benchmarks["Filesystem"]["Create"][language]["Manual"])
     container_value = calculate_average(benchmarks["Filesystem"]["Create"][language]["Container"])
     privileged_value = calculate_average(benchmarks["Filesystem"]["Create"][language]["Privileged"])
-    writer.writerow([0, regular_value, manual_value, container_value, privileged_value])    
+    writer.writerow([1, regular_value, manual_value, container_value, privileged_value])    
 
 def write_filesystem_write(writer, operation, language):
-    for size in ["1", "128", "256", "512", "1024", "2048"]:
+    sizes = ["1", "128", "256", "512", "1024", "2048"]
+    for size in sizes:
         regular_value = calculate_average(first(benchmarks["Filesystem"]["Write"][language]["Regular"][size]))
         regular_value2 = calculate_average(second(benchmarks["Filesystem"]["Write"][language]["Regular"][size]))
         manual_value = calculate_average(first(benchmarks["Filesystem"]["Write"][language]["Manual"][size]))
@@ -39,7 +40,7 @@ def write_filesystem_write(writer, operation, language):
         container_value2 = calculate_average(second(benchmarks["Filesystem"]["Write"][language]["Container"][size]))
         privileged_value = calculate_average(first(benchmarks["Filesystem"]["Write"][language]["Container"][size]))
         privileged_value2 = calculate_average(second(benchmarks["Filesystem"]["Write"][language]["Container"][size]))
-        writer.writerow([size, regular_value, regular_value2, manual_value, manual_value2, container_value, container_value2, privileged_value, privileged_value2])
+        writer.writerow([sizes.index(size) + 1, regular_value, regular_value2, manual_value, manual_value2, container_value, container_value2, privileged_value, privileged_value2])
 
 def write_filesystem_open_read_delete(writer, operation, language):
     cases = CASES["Delete"] if operation == "Delete" else CASES["Other"]
@@ -56,11 +57,28 @@ def write_memory(writer, operation, language):
 def write_network(writer, operation, language):
     write_row(writer, "Network", operation, language, 1)
 
+def write_network_throughputudp(writer, operation, language):    
+    operation = "ThroughputUDP"
+    regular_value = calculate_average(first(benchmarks["Network"][operation][language]["Regular"]))
+    regular_value2 = calculate_average(second(benchmarks["Network"][operation][language]["Regular"]))
+    manual_value = calculate_average(first(benchmarks["Network"][operation][language]["Manual"]))
+    manual_value2 = calculate_average(second(benchmarks["Network"][operation][language]["Manual"]))
+    container_value = calculate_average(first(benchmarks["Network"][operation][language]["Container"]))
+    container_value2 = calculate_average(second(benchmarks["Network"][operation][language]["Container"]))
+    privileged_value = calculate_average(first(benchmarks["Network"][operation][language]["Container"]))
+    privileged_value2 = calculate_average(second(benchmarks["Network"][operation][language]["Container"]))
+    writer.writerow([1, regular_value, regular_value2, manual_value, manual_value2, container_value, container_value2, privileged_value, privileged_value2])
+
 def write_row(writer, type, operation, language, index):
     regular_value = get_value(type, operation, language, "Regular", index)
     manual_value = get_value(type, operation, language, "Manual", index)
     container_value = get_value(type, operation, language, "Container", index)
     privileged_value = get_value(type, operation, language, "Privileged", index)
+
+    if type == "Filesystem" and operation in ["Open", "Read", "Delete"]:
+        cases = CASES["Delete"] if operation == "Delete" else CASES["Other"]
+        index = cases.index(index) + 1
+
     writer.writerow([index, regular_value, manual_value, container_value, privileged_value]) 
 
 def get_value(type, operation, language, mode, index):
@@ -77,7 +95,8 @@ def write_csv(filename, func, operation, language):
     with open(filename, "w", newline='') as file:
         writer = csv.writer(file)
 
-        field = HEADERS["Write"] if operation == "Write" and "Filesystem" in filename else HEADERS["Other"]
+        use_double = (operation == "Write" and "Filesystem" in filename) or (operation == "ThroughputUDP" and "Network" in filename)
+        field = HEADERS["Double"] if use_double else HEADERS["Single"]
         writer.writerow(field)
         func(writer, operation, language)
 
@@ -96,5 +115,6 @@ if __name__ == "__main__":
         for operation in ["Allocation", "Write", "Read"]:
             write_csv(f"../../Memory_{operation}_{language}.csv", write_memory, operation, language)
 
-        for operation in ["Latency", "ThroughputUDP", "ThroughputTCP", "Connect"]:
+        for operation in ["Latency", "ThroughputTCP", "Connect"]:
             write_csv(f"../../Network_{operation}_{language}.csv", write_network, operation, language)
+        write_csv(f"../../Network_ThroughputUDP_{language}.csv", write_network_throughputudp, "ThroughputUDP", language)
