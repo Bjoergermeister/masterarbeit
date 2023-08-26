@@ -28,3 +28,5 @@ done
 
 docker build -t masterarbeit-containervm-gameoflife ContainerVM/GameOfLife
 docker build -t masterarbeit-containervm-qsort ContainerVM/qsort
+docker build -t masterarbeit-containervm-binarytrees ContainerVM/binary-trees
+docker build -t masterarbeit-containervm-nbody ContainerVM/n-body
