@@ -1,5 +1,5 @@
 FROM ubuntu:focal
 
 WORKDIR /
-RUN mkdir /Results
+RUN mkdir /ipc
 COPY write .

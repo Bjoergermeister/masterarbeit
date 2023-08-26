@@ -10,8 +10,9 @@ function regular() {
     for i in {0..99}
     do
 	    echo "$((i + 1)) von 100"
-        C/read "${result_dir}/Memory_Read_C_Regular"
-        java -cp Java/ $jvm_args Main "${result_dir}/Memory_Read_Java_Regular"
+        C/read "../ipc/memory"
+        #C/read "${result_dir}/Memory_Read_C_Regular"
+        #java -cp Java/ $jvm_args Main "${result_dir}/Memory_Read_Java_Regular"
     done
 }
 
@@ -28,8 +29,9 @@ function manual() {
     for i in {0..99}
     do
 	    echo "$((i + 1)) von 100"
-        C/read "$result_dir/Memory_Read_C_Manual"
-        java -cp Java $jvm_args Main "$result_dir/Memory_Read_Java_Manual"
+        C/read "../ipc/memory"
+        #C/read "$result_dir/Memory_Read_C_Manual"
+        #java -cp Java $jvm_args Main "$result_dir/Memory_Read_Java_Manual"
     done
 
     rmdir /sys/fs/cgroup/memory/user.slice/masterarbeit
@@ -37,10 +39,13 @@ function manual() {
 
 # Prepare and run container tests
 function container() {
-    volume="type=bind,source=$(pwd)/../../Results,target=/Results"
+    
+    c_volume="type=bind,source=$(pwd)/../ipc,target=/ipc"
     c_image="masterarbeit-memory-read-c"
+    c_result_file="/ipc/memory"
+
+    java_volume="type=bind,source=$(pwd)/../../Results,target=/Results"
     java_image="masterarbeit-memory-read-java"
-    c_result_file="Results/Memory_Read_C_Container"
     java_result_file="Results/Memory_Read_Java_Container"
 
     memory_limit=$((1024 * 1024 * 100));
@@ -49,17 +54,20 @@ function container() {
     for i in {0..99}
     do
         echo "$((i + 1)) von 100"
-        docker run --name "$c_image" --rm --mount "$volume" --memory "$memory_limit" --memory-swap="$swap_limit" "$c_image" ./read "$c_result_file"
-        docker run --name "$java_image" --rm --mount "$volume" --memory "$memory_limit" --memory-swap="$swap_limit" "$java_image" java $jvm_args "Main" "$java_result_file"
+        docker run --name "$c_image" --rm --mount "$c_volume" --ipc=host --memory "$memory_limit" --memory-swap="$swap_limit" "$c_image" ./read "$c_result_file"
+        #docker run --name "$java_image" --rm --mount "$java_volume" --memory "$memory_limit" --memory-swap="$swap_limit" "$java_image" java $jvm_args "Main" "$java_result_file"
     done
 }
 
 # Prepare and run container tests in privileged mode
 function privileged() {
-    volume="type=bind,source=$(pwd)/../../Results,target=/Results"
+    
+    c_volume="type=bind,source=$(pwd)/../ipc,target=/ipc"
     c_image="masterarbeit-memory-read-c"
+    c_result_file="/ipc/memory"
+    
+    java_volume="type=bind,source=$(pwd)/../../Results,target=/Results"
     java_image="masterarbeit-memory-read-java"
-    c_result_file="Results/Memory_Read_C_Privileged"
     java_result_file="Results/Memory_Read_Java_Privileged"
 
     memory_limit=$((1024 * 1024 * 100));
@@ -68,8 +76,8 @@ function privileged() {
     for i in {0..99}
     do
         echo "$((i + 1)) von 100"
-        docker run --name "$c_image" --rm --privileged --mount "$volume" --memory "$memory_limit" --memory-swap="$swap_limit" "$c_image" ./read "$c_result_file"
-        docker run --name "$java_image" --rm --privileged --mount "$volume" --memory "$memory_limit" --memory-swap="$swap_limit" "$java_image" java $jvm_args "Main" "$java_result_file"
+        docker run --name "$c_image" --rm --privileged --mount "$c_volume" --ipc=host --memory "$memory_limit" --memory-swap="$swap_limit" "$c_image" ./read "$c_result_file"
+        #docker run --name "$java_image" --rm --privileged --mount "$java_volume" --memory "$memory_limit" --memory-swap="$swap_limit" "$java_image" java $jvm_args "Main" "$java_result_file"
     done
 }
 

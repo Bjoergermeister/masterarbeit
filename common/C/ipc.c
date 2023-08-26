@@ -11,7 +11,7 @@
 #include "benchmark.h"
 #include "ipc.h"
 
-void initialize_ipc(int mode, int *message_queue_id, int *shared_memory_id)
+void initialize_ipc(int mode, char *filename, int *message_queue_id, int *shared_memory_id)
 {
     if (mode != MODE_CREATOR && mode != MODE_USER)
     {
@@ -19,13 +19,13 @@ void initialize_ipc(int mode, int *message_queue_id, int *shared_memory_id)
         exit(-1);
     }
 
-    key_t shared_memory_key = ftok("memory", 1);
+    key_t shared_memory_key = ftok(filename, 1);
     handle_error(shared_memory_key, "ftok() 1");
 
-    key_t message_queue_key = ftok("memory", 2);
+    key_t message_queue_key = ftok(filename, 2);
     handle_error(message_queue_key, "ftok() 2");
 
-    int shared_memory_flags = (mode == MODE_CREATOR) ? 0600 | IPC_CREAT : 0;
+    int shared_memory_flags = (mode == MODE_CREATOR) ? 0666 | IPC_CREAT : 0;
     int message_queue_flags = (mode == MODE_CREATOR) ? 0666 | IPC_CREAT : 0;
 
     int sid = shmget(shared_memory_key, SHARED_MEMORY_SIZE, shared_memory_flags);
@@ -38,10 +38,10 @@ void initialize_ipc(int mode, int *message_queue_id, int *shared_memory_id)
     *shared_memory_id = sid;
 }
 
-long *get_shared_memory(int shared_memory_id)
+float *get_shared_memory(int shared_memory_id)
 {
-    long *address = (long *)shmat(shared_memory_id, NULL, 0);
-    handle_error((int)*address, "shmat()");
+    float *address = (float *)shmat(shared_memory_id, NULL, 0);
+    handle_error((int)address, "shmat()");
 
     return address;
 }

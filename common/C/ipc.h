@@ -8,6 +8,6 @@ struct message
     char text[20];
 };
 
-void initialize_ipc(int mode, int *message_queue_id, int *shared_memory_id);
-long *get_shared_memory(int shared_memory_id);
+void initialize_ipc(int mode, char *filename, int *message_queue_id, int *shared_memory_id);
+float *get_shared_memory(int shared_memory_id);
 void notify_receiver(int message_queue_id);

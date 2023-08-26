@@ -69,7 +69,7 @@ void save_benchmark_result_partial(float time, int count, char *prefix)
 
 void handle_error(int return_value, char *filename)
 {
-    if (return_value >= 0)
+    if (return_value != -1)
         return;
 
     char *message = "Ein Fehler ist aufgetreten: ";
