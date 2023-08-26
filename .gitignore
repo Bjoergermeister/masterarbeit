@@ -25,3 +25,12 @@ server
 # Specific tools for testing/debugging
 tools/list_interfaces
 tests/
+
+# Files for container/vm comparison
+nbody
+binary-trees/binary-trees
+qsort
+gameoflife
+
+# Other
+Memory/ipc/
