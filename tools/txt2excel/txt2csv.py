@@ -39,8 +39,8 @@ def write_filesystem_write(writer, operation, language):
         manual_value2 = calculate_average(second(benchmarks["Filesystem"]["Write"][language]["Manual"][size]))
         container_value = calculate_average(first(benchmarks["Filesystem"]["Write"][language]["Container"][size]))
         container_value2 = calculate_average(second(benchmarks["Filesystem"]["Write"][language]["Container"][size]))
-        privileged_value = calculate_average(first(benchmarks["Filesystem"]["Write"][language]["Container"][size]))
-        privileged_value2 = calculate_average(second(benchmarks["Filesystem"]["Write"][language]["Container"][size]))
+        privileged_value = calculate_average(first(benchmarks["Filesystem"]["Write"][language]["Privileged"][size]))
+        privileged_value2 = calculate_average(second(benchmarks["Filesystem"]["Write"][language]["Privileged"][size]))
         writer.writerow([sizes.index(size) + 1, regular_value, regular_value2, manual_value, manual_value2, container_value, container_value2, privileged_value, privileged_value2])
 
 def write_filesystem_open_read_delete(writer, operation, language):
@@ -66,8 +66,8 @@ def write_network_throughputudp(writer, operation, language):
     manual_value2 = calculate_average(second(benchmarks["Network"][operation][language]["Manual"]))
     container_value = calculate_average(first(benchmarks["Network"][operation][language]["Container"]))
     container_value2 = calculate_average(second(benchmarks["Network"][operation][language]["Container"]))
-    privileged_value = calculate_average(first(benchmarks["Network"][operation][language]["Container"]))
-    privileged_value2 = calculate_average(second(benchmarks["Network"][operation][language]["Container"]))
+    privileged_value = calculate_average(first(benchmarks["Network"][operation][language]["Privileged"]))
+    privileged_value2 = calculate_average(second(benchmarks["Network"][operation][language]["Privileged"]))
     writer.writerow([1, regular_value, regular_value2, manual_value, manual_value2, container_value, container_value2, privileged_value, privileged_value2])
 
 def write_containervm(writer, operation, language):
