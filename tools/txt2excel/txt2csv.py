@@ -4,6 +4,7 @@ from data_importer import import_data
 from data_importer import benchmarks
 
 HEADERS = {
+    "ContainerVM": ["level", "regular", "container", "vm"],
     "Single": ["level", "regular", "manual", "container", "privileged"],
     "Double": ["level", "regular", "regular2", "manual", "manual2", "container", "container2", "privileged", "privileged2"],
 }
@@ -69,6 +70,16 @@ def write_network_throughputudp(writer, operation, language):
     privileged_value2 = calculate_average(second(benchmarks["Network"][operation][language]["Container"]))
     writer.writerow([1, regular_value, regular_value2, manual_value, manual_value2, container_value, container_value2, privileged_value, privileged_value2])
 
+def write_containervm(writer, operation, language):
+    regular = calculate_average(benchmarks["ContainerVM"][operation]["Regular"])
+    container = calculate_average(benchmarks["ContainerVM"][operation]["Container"])
+    vm = calculate_average(benchmarks["ContainerVM"][operation]["VM"])
+
+    container_percentage = round(100 / regular * container, 2)
+    vm_percentage = round(100 / regular * vm, 2)
+
+    writer.writerow([1, 100, container_percentage, vm_percentage])
+
 def write_row(writer, type, operation, language, index):
     regular_value = get_value(type, operation, language, "Regular", index)
     manual_value = get_value(type, operation, language, "Manual", index)
@@ -95,9 +106,13 @@ def write_csv(filename, func, operation, language):
     with open(filename, "w", newline='') as file:
         writer = csv.writer(file)
 
-        use_double = (operation == "Write" and "Filesystem" in filename) or (operation == "ThroughputUDP" and "Network" in filename)
-        field = HEADERS["Double"] if use_double else HEADERS["Single"]
-        writer.writerow(field)
+        header = None
+        if "ContainerVM" in filename:
+            header = HEADERS["ContainerVM"]
+        else:
+            use_double = (operation == "Write" and "Filesystem" in filename) or (operation == "ThroughputUDP" and "Network" in filename)
+            header = HEADERS["Double"] if use_double else HEADERS["Single"]
+        writer.writerow(header)
         func(writer, operation, language)
 
 if __name__ == "__main__": 
@@ -118,3 +133,6 @@ if __name__ == "__main__":
         for operation in ["Latency", "ThroughputTCP", "Connect"]:
             write_csv(f"../../Network_{operation}_{language}.csv", write_network, operation, language)
         write_csv(f"../../Network_ThroughputUDP_{language}.csv", write_network_throughputudp, "ThroughputUDP", language)
+
+    for operation in ["Qsort", "GameOfLife", "BinaryTrees", "Nbody"]:
+        write_csv(f"../../ContainerVM_{operation}.csv", write_containervm, operation, None)
