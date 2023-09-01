@@ -23,6 +23,6 @@ int main(int argc, char **argv)
     unlink(file_to_read);
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end);
 
-    long difference = calculate_time_difference(&start, &end);
+    long difference = calculate_time_difference(&start, &end) / (float)NANOSECONDS_IN_ONE_MICROSECOND;
     save_benchmark_result(difference, file_to_save);
 }
