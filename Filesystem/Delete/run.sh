@@ -128,7 +128,7 @@ function container() {
 
 # Prepare and run container tests in privileged mode
 function privileged() {
-    echo "Executing tests in container mode"
+    echo "Executing tests in privileged mode"
 
     pushd ../.. > /dev/null
 
