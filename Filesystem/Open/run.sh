@@ -61,6 +61,7 @@ function manual() {
 
 # Prepare and run container tests
 function container() {
+    echo "Executing experiments in container mode"
 
     pushd ../.. > /dev/null
 
@@ -84,6 +85,7 @@ function container() {
 
 # Prepare and run container tests in privileged mode
 function privileged() {
+    echo "Executing experiments in privileged mode"
 
     pushd ../.. > /dev/null
 
