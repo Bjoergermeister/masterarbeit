@@ -18,6 +18,9 @@ allocation
 latency
 client
 server
+array
+receiver
+binary-trees
 
 # Java
 *.class
