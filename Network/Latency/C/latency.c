@@ -44,19 +44,12 @@ int main(int argc, char **argv)
 
     int socket = open_socket(SOCK_RAW, IPPROTO_ICMP);
     int bind_success = bind(socket, (struct sockaddr *)&source_address, sizeof(struct sockaddr));
-    if (bind_success == -1)
-    {
-        perror("bind(): ");
-        exit(-1);
-    }
+    handle_error(bind_success, "bind(): ");
 
     /* Socket options, tell the kernel we provide the IP structure */
     int on = 1;
-    if (setsockopt(socket, IPPROTO_IP, IP_HDRINCL, &on, sizeof(on)) < 0)
-    {
-        perror("setsockopt() for IP_HDRINCL error");
-        exit(-1);
-    }
+    int setsockopt_success = setsockopt(socket, IPPROTO_IP, IP_HDRINCL, &on, sizeof(on));
+    handle_error(setsockopt_success, "setsockopt() fpor IP_HDRINCL error");
 
     // Setup file descriptors for receiving the response and timeout
     fd_set sockets;
@@ -74,13 +67,9 @@ int main(int argc, char **argv)
         long bytes_send = sendto(socket, packet, packet_size, 0, dest, sizeof(struct sockaddr));
 
         ssize_t bytes_received = recvfrom(socket, &receive_buffer, packet_size, 0, dest, &dest_length);
-        if (bytes_received == -1)
-        {
-            perror("recvfrom(): ");
-            exit(-1);
-        }
-
         clock_gettime(CLOCK_MONOTONIC, &end);
+
+        handle_errors(bytes_received, "recvfrom(): ");
 
         float difference = calculate_time_difference(&start, &end) / (float)NANOSECONDS_IN_ONE_MICROSECOND;
         save_benchmark_result_float(difference, save_filename);

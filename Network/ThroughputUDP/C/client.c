@@ -19,6 +19,7 @@
 
 #define BYTES_IN_ONE_GIGABYTE (1024 * 1024 * 1024)
 #define RESPONSE_BUFFER_SIZE 100
+#define MESSAGE_LENGTH 1460
 
 void process_response(char *response, float *throughput, int *packet_count)
 {
@@ -42,25 +43,21 @@ int main(int argc, char **argv)
     struct sockaddr *dest = (struct sockaddr *)&destination_address;
     socklen_t dest_length = sizeof(struct sockaddr *);
 
-    char buffer[1460];
-    memset(buffer, 'A', 1460);
+    char buffer[MESSAGE_LENGTH];
+    memset(buffer, 'A', MESSAGE_LENGTH);
 
-    // Send data until BYTES_IN_ONE_GIGABYTE - sizeof(buffer) bytes are send
+    // Send data until one gigabyte is send
     int send_count = 0;
     long total_bytes_send = 0;
-    while (total_bytes_send < BYTES_IN_ONE_GIGABYTE - sizeof(buffer))
+    while (total_bytes_send < BYTES_IN_ONE_GIGABYTE)
     {
-        if ((BYTES_IN_ONE_GIGABYTE - total_bytes_send) <= sizeof(buffer))
+        if (BYTES_IN_ONE_GIGABYTE - total_bytes_send <= MESSAGE_LENGTH)
         {
             memset(buffer, '\0', 8);
         }
 
-        int bytes_send = sendto(socket, buffer, sizeof(buffer), 0, dest, sizeof(struct sockaddr));
-        if (bytes_send == -1)
-        {
-            perror("sendto(): ");
-            exit(-1);
-        }
+        ssize_t bytes_send = sendto(socket, buffer, sizeof(buffer), 0, dest, sizeof(struct sockaddr));
+        handle_error(bytes_send, "sendto(): ");
 
         send_count++;
         total_bytes_send += bytes_send;
@@ -76,19 +73,17 @@ int main(int argc, char **argv)
     int iteration = 1;
     char response_buffer[RESPONSE_BUFFER_SIZE];
 
+    // If the UDP packet with the end flag is lost, it needs to be resent. Therefore, run this code in a loop until
+    // we receive a response.
     while (true)
     {
         // Set the beginning of the send buffer to the iteration count. This tells the server how often the stop flag has
-        // been send so he can determine if the timeout has to be subtracted or not
+        // been send so it can determine if the timeout has to be subtracted or not
         int *iteration_address = (int *)buffer;
         *iteration_address = iteration;
 
         int bytes_send = sendto(socket, buffer, sizeof(buffer), 0, dest, sizeof(struct sockaddr));
-        if (bytes_send == -1)
-        {
-            perror("sendto(): ");
-            exit(-1);
-        }
+        handle_error(bytes_send, "sendto(): ");
 
         // Receive response from server which contains the result
         int bytes_received = recvfrom(socket, response_buffer, RESPONSE_BUFFER_SIZE, 0, dest, &dest_length);
@@ -97,7 +92,7 @@ int main(int argc, char **argv)
 
         // If the send package was lost (because of UDP), the server will not receive it and therefore not send a reply
         // Therefore, the timeout of recvfrom will trigger and errno is set to EAGAIN or EWOULDBLOCK.
-        // in this case, the package should be resent
+        // In this case, the package should be resent
         if (bytes_received == -1 && (errno == EAGAIN || errno == EWOULDBLOCK))
         {
             iteration++;

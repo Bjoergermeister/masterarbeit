@@ -55,11 +55,7 @@ int main(int argc, char **argv)
         }
 
         ssize_t bytes_send = send(socket, message, MESSAGE_LENGTH, 0);
-        if (bytes_send == -1)
-        {
-            perror("send()");
-            exit(-1);
-        }
+        handle_error(bytes_send, "send()");
 
         total_send_bytes += bytes_send;
         total_send_packets++;
@@ -69,11 +65,7 @@ int main(int argc, char **argv)
 
     // Get response with throughput from server
     ssize_t received_bytes = recv(socket, message, MESSAGE_LENGTH, 0);
-    if (received_bytes == -1)
-    {
-        perror("recv()");
-        exit(-1);
-    }
+    handle_error(received_bytes, "recv()");
 
     float throughput = 0;
     int packet_count = 0;
