@@ -9,7 +9,7 @@ function regular() {
     for i in {0..24}
     do
         echo "$((i + 1)) von 25"
-        #C/client $DESTINATION_IP "${result_dir}/Network_Connect_C_Regular.txt"
+        C/client $DESTINATION_IP "${result_dir}/Network_Connect_C_Regular.txt"
         java -cp Java/ Client $DESTINATION_IP "${result_dir}/Network_Connect_Java_Regular.txt"
     done
 }
@@ -41,7 +41,7 @@ function manual() {
     for i in {0..24}
     do
         echo "$((i + 1)) von 25"
-        #sudo ip netns exec container C/client $DESTINATION_IP "$result_dir/Network_Connect_C_Manual.txt"
+        sudo ip netns exec container C/client $DESTINATION_IP "$result_dir/Network_Connect_C_Manual.txt"
         sudo ip netns exec container java -cp Java Client $DESTINATION_IP "$result_dir/Network_Connect_Java_Manual.txt"
     done
 
@@ -83,7 +83,7 @@ function privileged() {
     for i in {0..24}
     do
         echo "$((i + 1)) von 25"
-        #docker run --name "$c_image" --rm -p 5000:5000 --privileged --mount "$volume" --ip 172.17.0.2 "$c_image" ./client "$DESTINATION_IP" "$c_result_file"
+        docker run --name "$c_image" --rm -p 5000:5000 --privileged --mount "$volume" --ip 172.17.0.2 "$c_image" ./client "$DESTINATION_IP" "$c_result_file"
         docker run --name "$java_image" --rm -p 3000:3000 --privileged --mount "$volume" "$java_image" java "Client" "$DESTINATION_IP" "$java_result_file"
     done
 }
